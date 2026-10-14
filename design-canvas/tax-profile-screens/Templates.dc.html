@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tax profile, Templates tab</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+button{font:inherit;color:inherit}
+a{color:#2557d6}a:hover{color:#1b45ad}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 860px; display: flex; flex-direction: column; box-sizing: border-box; background: #f4f4f6; color: #18181b; font-family: 'Segoe UI Variable Text', 'Segoe UI', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 13px; line-height: 1.45">
+
+<header style="display: flex; align-items: center; height: 40px; flex-shrink: 0">
+  <div style="flex: 1 1 0; min-width: 0; display: flex; align-items: center; gap: 4px; padding-left: 10px">
+    <button aria-label="Toggle sidebar" style="width: 28px; height: 28px; display: inline-grid; place-items: center; padding: 0; border: 0; border-radius: 6px; background: transparent; color: #54545d"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg></button>
+    <button aria-label="Back" style="width: 28px; height: 28px; display: inline-grid; place-items: center; padding: 0; border: 0; border-radius: 6px; background: transparent; color: #54545d"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></button>
+    <button aria-label="Forward" style="width: 28px; height: 28px; display: inline-grid; place-items: center; padding: 0; border: 0; border-radius: 6px; background: transparent; color: #54545d"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+    <button aria-label="Search" style="width: 28px; height: 28px; display: inline-grid; place-items: center; padding: 0; border: 0; border-radius: 6px; background: transparent; color: #54545d"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
+    <button aria-label="New return" style="width: 28px; height: 28px; display: inline-grid; place-items: center; padding: 0; border: 0; border-radius: 6px; background: transparent; color: #54545d"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+  </div>
+  <button aria-label="Tax profile" aria-expanded="false" style="display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px 0 4px; border: 1px solid #e2e2e6; border-radius: 999px; background: #ffffff; min-width: 0">
+    <span aria-hidden="true" style="width: 20px; height: 20px; border-radius: 50%; display: inline-grid; place-items: center; background: #dbe3f7; color: #22397a; font-size: 9px; font-weight: 600">GC</span>
+    <span style="font-weight: 600; white-space: nowrap">Goldcoders Corp</span>
+    <span style="font-family: 'Cascadia Mono', 'SF Mono', ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: #54545d; white-space: nowrap">009-123-456-00000</span>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+  </button>
+  <div style="flex: 1 1 0; min-width: 0; display: flex; justify-content: flex-end; align-items: center; gap: 4px; height: 100%">
+    <button aria-label="Notifications" style="width: 28px; height: 28px; display: inline-grid; place-items: center; padding: 0; border: 0; border-radius: 6px; background: transparent; color: #54545d"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg></button>
+    <button aria-label="Theme: light" style="width: 28px; height: 28px; display: inline-grid; place-items: center; padding: 0; border: 0; border-radius: 6px; background: transparent; color: #54545d"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></button>
+    <div aria-hidden="true" style="display: flex; height: 100%; margin-left: 4px">
+      <span style="width: 46px; display: grid; place-items: center"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#18181b" stroke-width="1"><path d="M0 5.5h10"/></svg></span>
+      <span style="width: 46px; display: grid; place-items: center"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#18181b" stroke-width="1"><rect x=".5" y=".5" width="9" height="9" rx="1"/></svg></span>
+      <span style="width: 46px; display: grid; place-items: center"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#18181b" stroke-width="1"><path d="M0 0l10 10M10 0L0 10"/></svg></span>
+    </div>
+  </div>
+</header>
+
+<main style="flex: 1; min-width: 0; background: #ffffff; border: 1px solid #e2e2e6; border-radius: 12px; margin: 0 8px 8px 8px; box-sizing: border-box">
+  <div style="max-width: 880px; margin: 0 auto; padding: 28px 32px 40px; box-sizing: border-box">
+    <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap">
+      <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; display: inline-grid; place-items: center; background: #dbe3f7; color: #22397a; font-size: 14px; font-weight: 600; flex-shrink: 0">GC</span>
+      <div style="flex: 1; min-width: 0">
+        <h1 style="margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.01em">Goldcoders Corp</h1>
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 2px; color: #54545d; font-size: 12px"><span style="font-family: 'Cascadia Mono', 'SF Mono', ui-monospace, Menlo, Consolas, monospace">009-123-456-00000</span><span style="width: 3px; height: 3px; border-radius: 50%; background: #71717a"></span><span>Head office</span><span style="width: 3px; height: 3px; border-radius: 50%; background: #71717a"></span><span>Corporation</span></div>
+      </div>
+      <div style="display: flex; gap: 8px">
+        <button style="display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border: 1px solid #cdcdd3; border-radius: 6px; background: #ffffff; font-weight: 500"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy TIN</button>
+        <button style="display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border: 1px solid #18181b; border-radius: 6px; background: #18181b; color: #ffffff; font-weight: 500"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>New return</button>
+      </div>
+    </div>
+
+    <div role="tablist" style="display: flex; gap: 4px; border-bottom: 1px solid #e2e2e6; margin: 20px 0 24px">
+      <button role="tab" aria-selected="false" style="height: 36px; padding: 0 10px; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; color: #54545d; font-weight: 500">Profile</button>
+      <button role="tab" aria-selected="false" style="display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 10px; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; color: #54545d; font-weight: 500">Forms<span style="font-size: 11px; padding: 0 6px; border-radius: 999px; background: #ebebee; line-height: 18px">7</span></button>
+      <button role="tab" aria-selected="true" style="display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 10px; border: 0; border-bottom: 2px solid #18181b; margin-bottom: -1px; background: none; font-weight: 500">Templates<span style="font-size: 11px; padding: 0 6px; border-radius: 999px; background: #ebebee; color: #54545d; line-height: 18px">2</span></button>
+    </div>
+
+    <p style="margin: 0 0 16px; color: #54545d; max-width: 62ch">One template per form for this branch. A template keeps setup answers and marks the fields to fill each period. It never keeps amounts.</p>
+
+    <div style="border: 1px solid #e2e2e6; border-radius: 12px; overflow: hidden">
+      <sc-for list="{{rows}}" as="t" hint-placeholder-count="7">
+        <div style="display: grid; grid-template-columns: 68px minmax(0, 1fr) 140px 96px; align-items: center; gap: 12px; min-height: 52px; padding: 8px 16px; box-sizing: border-box; border-top: {{t.border}}">
+          <span style="font-family: 'Cascadia Mono', 'SF Mono', ui-monospace, Menlo, Consolas, monospace; font-size: 12px; font-weight: 600; color: {{t.codeColor}}">{{t.code}}</span>
+          <span style="min-width: 0">
+            <span style="display: block; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: {{t.codeColor}}">{{t.name}}</span>
+            <span style="display: block; font-size: 12px; color: #71717a">{{t.sub}}</span>
+          </span>
+          <span style="font-size: 12px; color: #54545d; white-space: nowrap">{{t.counts}}</span>
+          <span style="justify-self: end">
+            <sc-if value="{{t.has}}" hint-placeholder-val="{{ false }}"><button style="height: 28px; padding: 0 10px; border: 0; border-radius: 6px; background: transparent; color: #54545d; font-weight: 500">Open</button></sc-if>
+            <sc-if value="{{t.none}}" hint-placeholder-val="{{ true }}"><button style="display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border: 1px solid #cdcdd3; border-radius: 6px; background: #ffffff; font-weight: 500"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Create</button></sc-if>
+          </span>
+        </div>
+      </sc-for>
+    </div>
+
+    <h2 style="font-size: 16px; font-weight: 600; margin: 32px 0 12px">In template mode, one click cycles a field</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+      <div style="border: 1px solid #e2e2e6; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+        <span style="display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 8px; border-radius: 999px; background: rgba(21,122,60,.10); color: #157a3c; font-size: 11px; font-weight: 500; align-self: flex-start"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Kept</span>
+        <span style="font-weight: 500">The value is saved</span>
+        <span style="font-size: 12px; color: #54545d">Prefilled on every new return, such as the ATC or the tax classification.</span>
+      </div>
+      <div style="border: 1px solid #e2e2e6; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+        <span style="display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 8px; border-radius: 999px; background: rgba(37,87,214,.10); color: #2557d6; font-size: 11px; font-weight: 500; align-self: flex-start"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>Marked</span>
+        <span style="font-weight: 500">A guided stop</span>
+        <span style="font-size: 12px; color: #54545d">Left blank. Guided mode takes you here each period, such as gross sales.</span>
+      </div>
+      <div style="border: 1px solid #e2e2e6; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+        <span style="display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px; background: #ebebee; color: #54545d; font-size: 11px; font-weight: 500; align-self: flex-start">Off</span>
+        <span style="font-weight: 500">Not part of the template</span>
+        <span style="font-size: 12px; color: #54545d">Starts empty. Auto fields like TIN, RDO and period stay locked.</span>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":860}}'>
+class Component extends DCLogic {
+renderVals() {
+var rows = [
+['1601-C', 'Monthly Remittance Return of Income Taxes Withheld on Compensation', 'Updated Sep 9, 2026', '6 kept · 2 marked'],
+['2550Q', 'Quarterly Value-Added Tax Return', 'Updated Jul 20, 2026', '4 kept · 3 marked'],
+['0619-E', 'Monthly Remittance Form for Creditable Income Taxes Withheld (Expanded)', null, ''],
+['1601-EQ', 'Quarterly Remittance Return of Creditable Income Taxes Withheld (Expanded)', null, ''],
+['1702Q', 'Quarterly Income Tax Return for Corporations', null, ''],
+['1702-RT', 'Annual Income Tax Return for Corporations (Regular Rate)', null, ''],
+['1604-C', 'Annual Information Return of Income Taxes Withheld on Compensation', null, '']
+];
+return {
+rows: rows.map(function (r, i) {
+var has = !!r[2];
+return {
+code: r[0], name: r[1], sub: has ? r[2] : 'No template yet', counts: r[3],
+has: has, none: !has,
+border: i === 0 ? '0' : '1px solid #e2e2e6',
+codeColor: has ? '#18181b' : '#71717a'
+};
+})
+};
+}
+}
+</script>
+</body>
+</html>

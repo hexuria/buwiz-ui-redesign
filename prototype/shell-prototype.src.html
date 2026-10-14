@@ -1,0 +1,1267 @@
+<title>eBIRForms Shell Redesign</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: unified 40px title bar over a 248px left rail, a rounded inset main surface, and a 320px right panel that serves either the tax profile or notifications */
+:root{
+  --bg:#f4f4f6; --surface:#ffffff; --raised:#ffffff; --hover:#ebebee; --selected:#e2e2e7;
+  --border:#e2e2e6; --border-strong:#cdcdd3;
+  --fg:#18181b; --fg-2:#54545d; --fg-3:#8a8a93;
+  --primary:#18181b; --primary-fg:#ffffff;
+  --accent:#2557d6; --accent-soft:rgba(37,87,214,.10); --focus:rgba(37,87,214,.45);
+  --success:#157a3c; --success-soft:rgba(21,122,60,.10);
+  --warning:#a5520a; --warning-soft:rgba(196,110,10,.13);
+  --danger:#c0262d; --danger-soft:rgba(192,38,45,.10);
+  --scrim:rgba(24,24,27,.30);
+  --shadow:0 1px 2px rgba(20,20,30,.04),0 10px 30px rgba(20,20,30,.08);
+  --pop:0 4px 12px rgba(20,20,30,.08),0 18px 44px rgba(20,20,30,.14);
+  --av-s:55%; --av-bg:90%; --av-fg:30%;
+  --font-ui:"Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  --font-mono:"Cascadia Mono","SF Mono",ui-monospace,Menlo,Consolas,monospace;
+  --font-num:var(--font-ui); /* TIN, branch and form codes: UI face + tabular digits, never monospace */
+  --fs-cap:11px; --fs-meta:12px; --fs-body:13px; --fs-emph:14px; --fs-title:16px; --fs-page:20px;
+  --r-ctl:6px; --r-row:8px; --r-card:12px; --r-dialog:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e0e10; --surface:#161619; --raised:#232328; --hover:#1f1f23; --selected:#29292f;
+  --border:#25252a; --border-strong:#38383f;
+  --fg:#f3f3f5; --fg-2:#a7a7b1; --fg-3:#73737d;
+  --primary:#f3f3f5; --primary-fg:#111113;
+  --accent:#7ea2ff; --accent-soft:rgba(126,162,255,.14); --focus:rgba(126,162,255,.55);
+  --success:#5bd68a; --success-soft:rgba(91,214,138,.12);
+  --warning:#f3b44a; --warning-soft:rgba(243,180,74,.13);
+  --danger:#ff7b7b; --danger-soft:rgba(255,123,123,.12);
+  --scrim:rgba(0,0,0,.55);
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 14px 36px rgba(0,0,0,.45);
+  --pop:0 4px 12px rgba(0,0,0,.4),0 18px 44px rgba(0,0,0,.55);
+  --av-s:40%; --av-bg:26%; --av-fg:84%;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0e0e10; --surface:#161619; --raised:#232328; --hover:#1f1f23; --selected:#29292f;
+  --border:#25252a; --border-strong:#38383f;
+  --fg:#f3f3f5; --fg-2:#a7a7b1; --fg-3:#73737d;
+  --primary:#f3f3f5; --primary-fg:#111113;
+  --accent:#7ea2ff; --accent-soft:rgba(126,162,255,.14); --focus:rgba(126,162,255,.55);
+  --success:#5bd68a; --success-soft:rgba(91,214,138,.12);
+  --warning:#f3b44a; --warning-soft:rgba(243,180,74,.13);
+  --danger:#ff7b7b; --danger-soft:rgba(255,123,123,.12);
+  --scrim:rgba(0,0,0,.55);
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 14px 36px rgba(0,0,0,.45);
+  --pop:0 4px 12px rgba(0,0,0,.4),0 18px 44px rgba(0,0,0,.55);
+  --av-s:40%; --av-bg:26%; --av-fg:84%;
+  color-scheme:dark;
+}
+html,body{height:100%}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font:var(--fs-body)/1.45 var(--font-ui);-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit}
+.page{height:100%;display:flex;flex-direction:column;padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));gap:12px}
+svg.i{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.mono{font-family:var(--font-num);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+
+/* prototype bar */
+.proto{display:flex;align-items:center;gap:8px 16px;flex-wrap:wrap}
+.proto .ttl{font-weight:600;font-size:var(--fs-emph)}
+.proto .sub{color:var(--fg-3);font-size:var(--fs-meta)}
+.proto .grow{flex:1}
+.proto label{font-size:var(--fs-meta);color:var(--fg-3);display:inline-flex;align-items:center;gap:8px}
+
+/* primitives */
+.ibtn{width:28px;height:28px;display:inline-grid;place-items:center;border:0;border-radius:var(--r-ctl);background:transparent;color:var(--fg-2);cursor:pointer;position:relative;flex-shrink:0}
+.ibtn:hover{background:var(--hover);color:var(--fg)}
+.ibtn[aria-pressed="true"]{background:var(--selected);color:var(--fg)}
+.ibtn:disabled{color:var(--fg-3);opacity:.5;cursor:default;background:transparent}
+.ibtn .dot{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px var(--bg)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 12px;border-radius:var(--r-ctl);border:1px solid transparent;background:transparent;font-weight:500;font-size:var(--fs-body);cursor:pointer;white-space:nowrap;color:var(--fg)}
+.btn.sm{height:28px;padding:0 10px}
+.btn.primary{background:var(--primary);color:var(--primary-fg)}
+.btn.primary:hover{opacity:.88}
+.btn.secondary{background:var(--surface);border-color:var(--border-strong)}
+.btn.secondary:hover{background:var(--hover)}
+.btn.ghost{color:var(--fg-2)}
+.btn.ghost:hover{background:var(--hover);color:var(--fg)}
+.btn.danger{background:var(--danger-soft);color:var(--danger)}
+.btn.danger:hover{filter:brightness(.97)}
+.nav{display:flex;align-items:center;gap:10px;width:100%;height:32px;padding:0 8px;border:0;border-radius:var(--r-row);background:transparent;color:var(--fg-2);font-weight:500;text-align:left;cursor:pointer}
+.nav:hover{background:var(--hover);color:var(--fg)}
+.nav[aria-current="page"]{background:var(--selected);color:var(--fg)}
+.nav .lbl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav .count{font-size:var(--fs-meta);color:var(--fg-3);font-variant-numeric:tabular-nums}
+.nav .trail{color:var(--fg-3)}
+.glabel{font-size:var(--fs-meta);font-weight:500;color:var(--fg-3);padding:16px 8px 4px}
+.av{display:inline-grid;place-items:center;border-radius:50%;flex-shrink:0;font-weight:600;letter-spacing:.02em;background:hsl(var(--h) var(--av-s) var(--av-bg));color:hsl(var(--h) var(--av-s) var(--av-fg))}
+.av.s20{width:20px;height:20px;font-size:9px}
+.av.s28{width:28px;height:28px;font-size:11px}
+.av.s40{width:40px;height:40px;font-size:14px}
+.av.s56{width:56px;height:56px;font-size:19px}
+.chip{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 8px;border-radius:999px;font-size:var(--fs-cap);font-weight:500;background:var(--hover);color:var(--fg-2);white-space:nowrap}
+.chip svg.i{width:12px;height:12px}
+.chip.accent{background:var(--accent-soft);color:var(--accent)}
+.chip.success{background:var(--success-soft);color:var(--success)}
+.chip.warning{background:var(--warning-soft);color:var(--warning)}
+.chip.danger{background:var(--danger-soft);color:var(--danger)}
+.switch{position:relative;width:32px;height:18px;border-radius:999px;border:0;background:var(--border-strong);cursor:pointer;flex-shrink:0;transition:background .15s}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+.switch[aria-checked="true"]{background:var(--accent)}
+.switch[aria-checked="true"]::after{transform:translateX(14px)}
+.seg{display:inline-flex;gap:2px;padding:2px;border-radius:var(--r-row);background:var(--hover)}
+.seg button{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border:0;border-radius:var(--r-ctl);background:transparent;color:var(--fg-2);font-size:var(--fs-meta);font-weight:500;cursor:pointer}
+.seg button svg.i{width:14px;height:14px}
+.seg button[aria-pressed="true"]{background:var(--raised);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.input{width:100%;height:32px;padding:0 10px;border:1px solid var(--border-strong);border-radius:var(--r-row);background:var(--surface);color:var(--fg);font:var(--fs-body) var(--font-ui)}
+.input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.input:disabled{background:var(--hover);color:var(--fg-2)}
+.input.err{border-color:var(--danger)}
+.errtxt{font-size:var(--fs-meta);color:var(--danger);margin-top:4px}
+.check{width:16px;height:16px;border-radius:4px;border:1px solid var(--border-strong);background:var(--surface);display:inline-grid;place-items:center;cursor:pointer;padding:0;flex-shrink:0}
+.check svg.i{width:12px;height:12px;stroke-width:2.5;opacity:0}
+.check[aria-checked="true"]{background:var(--primary);border-color:var(--primary);color:var(--primary-fg)}
+.check[aria-checked="true"] svg.i{opacity:1}
+
+/* window */
+.window{position:relative;flex:1;min-height:0;display:grid;grid-template-rows:40px minmax(0,1fr);background:var(--bg);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+.window.win{border-radius:8px}
+.titlebar{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;user-select:none}
+.tb-left{display:flex;align-items:center;gap:4px;padding-left:10px;min-width:0}
+.tb-right{display:flex;align-items:center;gap:4px;justify-self:end;height:100%}
+.window.mac .tb-right{padding-right:10px}
+.lights{display:none;gap:8px;padding:0 10px 0 4px}
+.lights span{width:12px;height:12px;border-radius:50%}
+.lights span:nth-child(1){background:#ff5f57}.lights span:nth-child(2){background:#febc2e}.lights span:nth-child(3){background:#28c840}
+.window.mac .lights{display:flex}
+.wc{display:none;height:100%;margin-left:4px}
+.window.win .wc{display:flex}
+.wc button{width:46px;height:100%;border:0;background:transparent;display:grid;place-items:center;color:var(--fg);cursor:default}
+.wc button:hover{background:var(--hover)}
+.wc button.close:hover{background:#c42b1c;color:#fff}
+.wc svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:1}
+.collapsed-only{display:none}
+.window.sb-hidden .collapsed-only{display:inline-grid}
+.pill{display:inline-flex;align-items:center;gap:8px;height:30px;max-width:min(460px,46vw);padding:0 10px 0 4px;border:1px solid var(--border);border-radius:999px;background:var(--surface);cursor:pointer;min-width:0}
+.pill:hover{border-color:var(--border-strong)}
+.pill[aria-expanded="true"]{background:var(--selected);border-color:var(--border-strong)}
+.pill .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.pill .tin{font-size:var(--fs-meta);color:var(--fg-2);white-space:nowrap}
+.pill .bc{display:none;font-size:var(--fs-meta);color:var(--fg-2)}
+.pill svg.i{width:14px;height:14px;color:var(--fg-3)}
+
+.body{display:flex;min-height:0}
+.sidebar{width:248px;flex-shrink:0;display:flex;flex-direction:column;padding:4px 8px 8px;min-height:0}
+.window.sb-hidden .sidebar{display:none}
+.sb-top{display:flex;gap:4px;align-items:center}
+.searchbtn{flex:1;display:flex;align-items:center;gap:8px;height:32px;padding:0 8px 0 10px;border:1px solid var(--border);border-radius:var(--r-row);background:var(--surface);color:var(--fg-3);cursor:pointer;min-width:0}
+.searchbtn:hover{border-color:var(--border-strong);color:var(--fg-2)}
+.searchbtn .lbl{flex:1;text-align:left}
+kbd{font:500 var(--fs-cap) var(--font-ui);color:var(--fg-3);border:1px solid var(--border);border-radius:4px;padding:0 4px;height:18px;display:inline-flex;align-items:center}
+.sb-scroll{flex:1;overflow:auto;min-height:0;display:flex;flex-direction:column;gap:2px;padding-top:12px}
+.sb-foot{display:flex;flex-direction:column;gap:2px;padding-top:8px;position:relative}
+.account{display:flex;align-items:center;gap:10px;width:100%;padding:6px 8px;border:0;border-radius:var(--r-row);background:transparent;cursor:pointer;text-align:left}
+.account:hover,.account[aria-expanded="true"]{background:var(--hover)}
+.account .who{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3}
+.account .who b{font-weight:500;font-size:var(--fs-body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.account .who span{font-size:var(--fs-meta);color:var(--fg-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.account svg.i{color:var(--fg-3)}
+.menu{position:absolute;left:0;right:0;bottom:calc(100% + 4px);background:var(--raised);border:1px solid var(--border);border-radius:var(--r-card);box-shadow:var(--pop);padding:4px;z-index:25}
+.menu .head{padding:8px 8px 8px;font-size:var(--fs-meta);color:var(--fg-3);border-bottom:1px solid var(--border);margin-bottom:4px}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);margin:0 8px 8px 0;overflow:hidden;container-type:inline-size}
+.window.sb-hidden .main{margin-left:8px}
+.window.panel-open .main{margin-right:0}
+.main-scroll{flex:1;overflow:auto}
+.content{max-width:880px;margin:0 auto;padding:28px 32px 56px}
+.rpanel{display:none;width:320px;flex-shrink:0;flex-direction:column;min-height:0}
+.window.panel-open .rpanel{display:flex}
+.rp-head{display:flex;align-items:center;gap:8px;height:40px;padding:0 12px 0 20px;flex-shrink:0}
+.rp-head h2{flex:1;margin:0;font-size:var(--fs-emph);font-weight:600}
+.rp-scroll{flex:1;overflow:auto;padding:0 12px 12px 12px}
+
+/* page */
+.ph{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.ph-text{flex:1;min-width:0}
+.ph h1{margin:0;font-size:var(--fs-page);font-weight:600;letter-spacing:-.01em;text-wrap:balance}
+.ph .meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:2px;color:var(--fg-2);font-size:var(--fs-meta)}
+.sep-dot{width:3px;height:3px;border-radius:50%;background:var(--fg-3)}
+.ph-actions{display:flex;gap:8px}
+.lede{color:var(--fg-2);margin:6px 0 0;max-width:62ch}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin:20px 0 24px;overflow-x:auto}
+.tab{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 10px;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;background:none;color:var(--fg-2);font-weight:500;cursor:pointer;white-space:nowrap}
+.tab:hover{color:var(--fg)}
+.tab[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--fg)}
+.tab .count{font-size:var(--fs-cap);padding:0 6px;border-radius:999px;background:var(--hover);color:var(--fg-2);line-height:18px}
+h2.sec{font-size:var(--fs-title);font-weight:600;margin:32px 0 12px}
+h2.sec:first-child{margin-top:0}
+
+/* disclosure */
+.disc-group{border:1px solid var(--border);border-radius:var(--r-card);overflow:hidden}
+.disc+.disc{border-top:1px solid var(--border)}
+.disc-head{display:flex;align-items:center;gap:8px;padding-right:12px}
+.disc-toggle{flex:1;min-width:0;display:flex;align-items:center;gap:8px;height:44px;padding:0 8px 0 12px;border:0;background:none;cursor:pointer;text-align:left;font-weight:600}
+.disc-toggle .chev{color:var(--fg-3);transition:transform .15s}
+.disc.open .chev{transform:rotate(90deg)}
+.disc-meta{font-weight:400;font-size:var(--fs-meta);color:var(--fg-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.disc-body{display:none;padding:4px 20px 20px 36px}
+.disc.open .disc-body{display:block}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 32px;margin:0}
+.field{min-width:0}
+.field.full{grid-column:1/-1}
+.field dt{display:flex;align-items:center;gap:8px;font-size:var(--fs-meta);color:var(--fg-2);margin-bottom:4px;min-height:20px}
+.field dt .grow{flex:1}
+.field dd{margin:0;overflow-wrap:anywhere}
+.field.inh dd{color:var(--fg-2)}
+.inh-ctl{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-cap);color:var(--fg-3)}
+.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+
+/* lists */
+.list{border:1px solid var(--border);border-radius:var(--r-card);overflow:hidden}
+.row{display:grid;align-items:center;gap:12px;min-height:52px;padding:8px 16px}
+.row+.row{border-top:1px solid var(--border)}
+.row.click{cursor:pointer}
+.row.click:hover{background:var(--hover)}
+.row.dim{color:var(--fg-3)}
+.row.dim .code{color:var(--fg-3)}
+.code{font-family:var(--font-num);font-size:var(--fs-meta);font-weight:600;font-variant-numeric:tabular-nums}
+.rname{min-width:0}
+.rname b{display:block;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rname span{display:block;font-size:var(--fs-meta);color:var(--fg-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row.dim .rname b{color:var(--fg-3)}
+.num{font-size:var(--fs-meta);color:var(--fg-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.r-forms{grid-template-columns:16px 68px minmax(0,1fr) 84px 104px 112px}
+.r-due{grid-template-columns:44px 68px minmax(0,1fr) 88px 96px}
+.r-tpl{grid-template-columns:68px minmax(0,1fr) 140px 96px}
+.r-filed{grid-template-columns:68px minmax(0,1fr) 104px 132px}
+.datebox{width:44px;text-align:center;line-height:1.1}
+.datebox small{display:block;font-size:var(--fs-cap);font-weight:600;color:var(--fg-3);letter-spacing:.06em}
+.datebox b{font-size:var(--fs-title);font-weight:600;font-variant-numeric:tabular-nums}
+.toolbar{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;margin-bottom:16px}
+.toolbar .grow{flex:1}
+.packs{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.packs .lbl{font-size:var(--fs-meta);color:var(--fg-3);margin-right:2px}
+.banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border-radius:var(--r-card);background:var(--accent-soft);margin-bottom:16px}
+.banner p{flex:1;margin:0;min-width:200px}
+.empty{padding:40px 16px;text-align:center;color:var(--fg-3)}
+.srow{display:flex;align-items:center;gap:16px;padding:14px 0;border-top:1px solid var(--border)}
+.srow:first-of-type{border-top:0}
+.srow .txt{flex:1;min-width:0}
+.srow .txt b{display:block;font-weight:500}
+.srow .txt span{display:block;font-size:var(--fs-meta);color:var(--fg-3)}
+.card{border:1px solid var(--border);border-radius:var(--r-card);padding:4px 16px}
+
+/* right panel content */
+.tp-hero{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:12px 8px 16px}
+.tp-hero .edit{position:absolute;top:8px;right:0}
+.tp-hero h3{margin:4px 0 0;font-size:var(--fs-title);font-weight:600;text-wrap:balance}
+.tp-hero .tin{font-size:var(--fs-meta);color:var(--fg-2)}
+.facts{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 12px;margin:0 8px 4px;padding:12px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.facts dt{font-size:var(--fs-meta);color:var(--fg-3);display:flex;align-items:center;gap:6px}
+.facts dd{margin:0;font-size:var(--fs-body);min-width:0;overflow-wrap:anywhere}
+.p-edit{display:flex;flex-direction:column;gap:12px;padding:4px 8px 8px}
+.p-edit label{display:flex;flex-direction:column;gap:4px;font-size:var(--fs-meta);color:var(--fg-2)}
+.notif{display:flex;gap:12px;padding:10px 8px;border-radius:var(--r-row)}
+.notif:hover{background:var(--hover)}
+.notif .ico{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;background:var(--hover);color:var(--fg-2)}
+.notif .ico.warning{background:var(--warning-soft);color:var(--warning)}
+.notif .ico.success{background:var(--success-soft);color:var(--success)}
+.notif .tx{flex:1;min-width:0}
+.notif .tx b{display:block;font-weight:500}
+.notif .tx span{display:block;font-size:var(--fs-meta);color:var(--fg-3)}
+.notif .when{font-size:var(--fs-cap);color:var(--fg-3);white-space:nowrap;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.notif .udot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+/* overlays */
+.overlay{position:absolute;inset:0;background:var(--scrim);display:flex;justify-content:center;align-items:flex-start;padding:64px 16px 16px;z-index:40}
+.dialog{width:min(560px,100%);max-height:100%;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-dialog);box-shadow:var(--pop);overflow:hidden}
+.dlg-head{padding:16px 20px 4px}
+.dlg-head h2{margin:0;font-size:var(--fs-title);font-weight:600}
+.dlg-head p{margin:2px 0 0;color:var(--fg-2);font-size:var(--fs-meta)}
+.dlg-body{padding:12px 12px;overflow:auto}
+.dlg-foot{display:flex;gap:8px;justify-content:flex-end;padding:12px 20px 16px;border-top:1px solid var(--border)}
+.pal-input{display:flex;align-items:center;gap:10px;padding:0 16px;height:48px;border-bottom:1px solid var(--border);color:var(--fg-3)}
+.pal-input input{flex:1;border:0;background:transparent;font:var(--fs-emph) var(--font-ui);color:var(--fg);outline:none;min-width:0}
+.opt{display:flex;align-items:center;gap:10px;width:100%;min-height:36px;padding:6px 10px;border:0;border-radius:var(--r-row);background:transparent;text-align:left;cursor:pointer;color:var(--fg)}
+.opt:hover,.opt.on{background:var(--hover)}
+.opt[aria-selected="true"]{background:var(--selected)}
+.opt .lbl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.opt .hint{font-size:var(--fs-meta);color:var(--fg-3)}
+.opt svg.i{color:var(--fg-2)}
+.pgroup{font-size:var(--fs-cap);font-weight:600;color:var(--fg-3);padding:10px 10px 4px;letter-spacing:.04em;text-transform:uppercase}
+.select{height:32px;border:1px solid var(--border-strong);border-radius:var(--r-row);background:var(--surface);color:var(--fg);padding:0 8px;font:var(--fs-body) var(--font-ui)}
+.toast{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;max-width:calc(100% - 32px);padding:10px 14px;border-radius:var(--r-card);background:var(--primary);color:var(--primary-fg);box-shadow:var(--pop);z-index:50;font-weight:500}
+.toast svg.i{flex-shrink:0}
+
+/* design-system page */
+.ds{flex:1;min-height:0;overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+.ds-in{max-width:980px;margin:0 auto;padding:32px 32px 64px}
+.ds h1{font-size:28px;font-weight:600;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.ds h2{font-size:var(--fs-page);font-weight:600;margin:48px 0 6px;letter-spacing:-.01em}
+.ds h3{font-size:var(--fs-emph);font-weight:600;margin:0}
+.ds p.lead{color:var(--fg-2);max-width:66ch;margin:8px 0 0}
+.ds .note{color:var(--fg-2);max-width:66ch;margin:0 0 16px}
+.rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:20px}
+.rule{border:1px solid var(--border);border-radius:var(--r-card);padding:14px 16px}
+.rule b{display:block;font-size:var(--fs-emph);margin-bottom:4px}
+.rule span{color:var(--fg-2);font-size:var(--fs-meta)}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.sw{display:flex;gap:12px;align-items:center;min-width:0}
+.sw i{width:40px;height:40px;border-radius:var(--r-row);border:1px solid var(--border);flex-shrink:0}
+.sw div{min-width:0;font-size:var(--fs-meta);color:var(--fg-2);line-height:1.35}
+.sw code{font-family:var(--font-num);font-size:var(--fs-meta);color:var(--fg)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r-card)}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-meta)}
+th,td{text-align:left;padding:9px 14px;border-top:1px solid var(--border);vertical-align:middle;white-space:nowrap}
+th{border-top:0;color:var(--fg-3);font-weight:500;background:var(--bg)}
+td.wrap{white-space:normal;min-width:200px;color:var(--fg-2)}
+.comp{border:1px solid var(--border);border-radius:var(--r-card);margin-top:16px;overflow:hidden}
+.comp-demo{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:20px;background:var(--bg);border-bottom:1px solid var(--border);min-height:76px}
+.comp-demo.col{flex-direction:column;align-items:stretch}
+.comp-spec{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px 24px;padding:16px 20px}
+.comp-spec h3{grid-column:1/-1}
+.comp-spec ul{margin:0;padding-left:18px;color:var(--fg-2);font-size:var(--fs-meta);display:flex;flex-direction:column;gap:4px}
+.comp-spec .k{font-size:var(--fs-cap);font-weight:600;color:var(--fg-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.anat{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;height:40px;border:1px dashed var(--border-strong);border-radius:var(--r-row);background:var(--surface);padding:0 8px;gap:8px;width:100%}
+.anat .z{display:flex;gap:4px;align-items:center;font-size:var(--fs-cap);color:var(--fg-3)}
+.anat .z.r{justify-self:end}
+.anat .slot{border:1px dashed var(--border-strong);border-radius:4px;padding:2px 6px;white-space:nowrap}
+.anat .slot.cond{border-style:dotted;color:var(--accent)}
+
+/* form page */
+.content.wide{max-width:1120px}
+.fp-wrap{container-type:inline-size}
+.fp-ctx{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px}
+.fp-bar{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;margin:20px 0 20px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-card);background:var(--bg)}
+.fp-bar .grow{flex:1}
+.fp-bar label.inl{display:inline-flex;align-items:center;gap:8px;font-size:var(--fs-meta);color:var(--fg-2)}
+.fp{display:grid;grid-template-columns:208px minmax(0,1fr);gap:28px;align-items:start}
+.fp-nav{position:sticky;top:12px;display:flex;flex-direction:column;gap:2px}
+.fp-nav .nav{height:auto;min-height:32px;padding:6px 8px;align-items:flex-start}
+.fp-nav .nav .lbl{white-space:normal;line-height:1.35}
+.fp-nav .nav .count{padding-top:1px}
+.fp-nav .navhead{font-size:var(--fs-meta);font-weight:500;color:var(--fg-3);padding:0 8px 6px}
+.part{border:1px solid var(--border);border-radius:var(--r-card);overflow:hidden;scroll-margin-top:12px;background:var(--surface)}
+.part+.part{margin-top:16px}
+.part>summary{list-style:none;display:flex;align-items:center;gap:8px;min-height:48px;padding:0 16px 0 12px;cursor:pointer;font-weight:600}
+.part>summary::-webkit-details-marker{display:none}
+.part>summary .chev{color:var(--fg-3);transition:transform .15s}
+.part[open]>summary .chev{transform:rotate(90deg)}
+.part>summary .t{flex:1;min-width:0}
+.part>summary .disc-meta{flex-shrink:0}
+.part-body{border-top:1px solid var(--border)}
+.item{display:grid;grid-template-columns:44px minmax(0,1fr);gap:4px 12px;padding:14px 20px 16px 12px}
+.item+.item{border-top:1px solid var(--border)}
+.item.calc{background:var(--bg)}
+.ino{font:600 var(--fs-meta) var(--font-num);font-variant-numeric:tabular-nums;color:var(--fg-2);background:var(--hover);border-radius:var(--r-ctl);height:22px;min-width:30px;display:inline-grid;place-items:center;padding:0 6px;justify-self:start;margin-top:1px}
+.ino.blank{background:transparent}
+.ilabel{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:10px;min-height:22px}
+.ilabel .tx{flex:1 1 240px;font-weight:500;line-height:1.4;padding-top:2px;min-width:0}
+.ilabel .req{color:var(--danger);margin-left:2px}
+.ctrls{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:flex-end}
+.ctl{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1 1 220px;max-width:100%}
+.ctl.xs{flex:0 0 88px}.ctl.sm{flex:0 1 140px}.ctl.money{flex:0 1 230px}.ctl.md{flex:1 1 180px}
+.ctl .sub{font-size:var(--fs-meta);color:var(--fg-2);overflow-wrap:anywhere}
+.affix{position:relative;display:block}
+.affix>i{position:absolute;top:50%;transform:translateY(-50%);font-style:normal;font-size:var(--fs-meta);color:var(--fg-3);pointer-events:none}
+.affix.peso>i{left:10px}.affix.peso input{padding-left:24px;text-align:right;font-variant-numeric:tabular-nums}
+.affix.pct>i{right:10px}.affix.pct input{padding-right:24px;text-align:right}
+.input.auto,.input[readonly]{background:var(--hover);color:var(--fg-2);cursor:default}
+.input.auto:focus{box-shadow:none;border-color:var(--border-strong)}
+.radios{display:flex;flex-wrap:wrap;gap:6px}
+.radio{position:relative;display:inline-flex}
+.radio input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.radio span{display:inline-flex;align-items:center;height:28px;padding:0 12px;border:1px solid var(--border-strong);border-radius:999px;font-size:var(--fs-meta);font-weight:500;color:var(--fg-2);background:var(--surface);white-space:nowrap}
+.radio:hover span{border-color:var(--fg-3);color:var(--fg)}
+.radio input:checked+span{background:var(--primary);border-color:var(--primary);color:var(--primary-fg)}
+.radio input:focus-visible+span{outline:2px solid var(--focus);outline-offset:1px}
+.chkl{display:inline-flex;align-items:center;gap:8px;min-height:28px;font-size:var(--fs-body)}
+.chkl input{width:16px;height:16px;margin:0;accent-color:var(--primary)}
+.tin{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tin input{text-align:center;font-family:var(--font-num);font-variant-numeric:tabular-nums;padding:0 6px}
+.tin .d{color:var(--fg-3)}
+.tbl-in{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r-row)}
+.tbl-in table{font-size:var(--fs-meta)}
+.tbl-in th{white-space:normal;min-width:120px;vertical-align:bottom}
+.tbl-in th.n,.tbl-in td.n{min-width:36px;width:36px;color:var(--fg-3);text-align:center}
+.tbl-in td{padding:6px 8px}
+.tbl-in td .input{height:30px;min-width:120px}
+.tbl-in td.money .input{text-align:right;font-variant-numeric:tabular-nums}
+.more{margin-top:4px}
+.more>summary{cursor:pointer;color:var(--fg-2);font-size:var(--fs-meta);font-weight:500;list-style:none;display:inline-flex;align-items:center;gap:6px;height:28px}
+.more>summary::-webkit-details-marker{display:none}
+.more[open]>summary .chev{transform:rotate(90deg)}
+.more .ctrls{margin-top:10px}
+.tbanner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;border-radius:var(--r-card);background:var(--accent-soft);margin-bottom:16px}
+.tbanner p{margin:0;flex:1;min-width:200px}
+/* official sheet drawer (print preview) */
+.sheet{position:fixed;top:0;right:0;bottom:0;width:min(880px,62vw);z-index:60;display:flex;flex-direction:column;background:var(--bg);border-left:1px solid var(--border);box-shadow:var(--pop);padding-top:env(safe-area-inset-top,0px);padding-right:env(safe-area-inset-right,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.sheet-head{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;padding:10px 12px 10px 20px;border-bottom:1px solid var(--border)}
+.sheet-head .ttl{flex:1 1 200px;min-width:0;display:flex;flex-direction:column;line-height:1.3}
+.sheet-head .ttl b{font-size:var(--fs-emph);font-weight:600}
+.sheet-head .ttl span{font-size:var(--fs-meta);color:var(--fg-3)}
+.sheet-body{flex:1;min-height:0;overflow:auto;background:var(--hover);padding:16px}
+.sheet-frame{display:block;border:0;background:#fff;width:832px;transform-origin:0 0;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.sheet-note{max-width:520px;margin:24px auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);padding:20px;display:flex;flex-direction:column;gap:12px}
+.sheet-note h3{margin:0;font-size:var(--fs-title);font-weight:600}
+.sheet-note p{margin:0;color:var(--fg-2)}
+.sheet-note code{display:block;font-family:var(--font-mono);font-size:var(--fs-meta);background:var(--hover);border-radius:var(--r-row);padding:10px 12px;overflow-x:auto;white-space:pre;color:var(--fg)}
+@media (max-width:860px){.sheet{width:100%}}
+/* forms showcase */
+.fs-in{max-width:1180px;margin:0 auto;padding:32px 32px 64px}
+.eli5{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) ;gap:16px;margin:24px 0 8px;align-items:stretch}
+.eli5 figure{margin:0;border:1px solid var(--border);border-radius:var(--r-card);padding:16px;display:flex;flex-direction:column;gap:12px;background:var(--bg)}
+.eli5 svg{width:100%;height:auto;max-height:170px}
+.eli5 figcaption{font-size:var(--fs-emph);font-weight:600;text-wrap:balance}
+.eli5 figcaption span{display:block;font-weight:400;font-size:var(--fs-meta);color:var(--fg-2);margin-top:2px}
+.eli5 .stepn{width:24px;height:24px;border-radius:50%;background:var(--primary);color:var(--primary-fg);display:inline-grid;place-items:center;font-size:var(--fs-meta);font-weight:600}
+.sv-surf{fill:var(--surface)}.sv-bg{fill:var(--bg)}.sv-hover{fill:var(--hover)}.sv-fill{fill:var(--selected)}.sv-prim{fill:var(--primary)}.sv-accs{fill:var(--accent-soft)}
+.sv-stroke{stroke:var(--border-strong);stroke-width:1.2}
+.sv-line{fill:none;stroke:var(--border-strong);stroke-width:1.2}
+.sv-line-acc{fill:none;stroke:var(--accent);stroke-width:1.4}
+.sv-t{fill:var(--fg);font:600 10px var(--font-num)}
+.sv-l{fill:var(--fg);font:500 11px var(--font-ui)}
+.sv-a{fill:var(--accent);font:600 9px var(--font-ui)}
+.facts3{display:flex;gap:8px 28px;flex-wrap:wrap;margin:16px 0 0;color:var(--fg-2)}
+.facts3 b{display:block;font-size:24px;font-weight:600;color:var(--fg);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.fs-tools{display:flex;gap:8px 12px;align-items:center;flex-wrap:wrap;margin:36px 0 16px}
+.fs-tools .searchbtn{flex:0 1 320px;cursor:text}
+.fs-tools .searchbtn input{flex:1;border:0;background:transparent;color:var(--fg);font:var(--fs-body) var(--font-ui);outline:none;min-width:0}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.fcard{display:flex;flex-direction:column;gap:8px;padding:14px 16px;border:1px solid var(--border);border-radius:var(--r-card);background:var(--surface);text-align:left;cursor:pointer;min-width:0}
+.fcard:hover{border-color:var(--border-strong);box-shadow:var(--shadow)}
+.fcard .top{display:flex;align-items:center;gap:8px}
+.fcard .fc{font:600 var(--fs-title) var(--font-num);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.fcard .ft{font-weight:500;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.7em}
+.fcard .chips{display:flex;gap:6px;flex-wrap:wrap}
+.fcard .bars{display:flex;gap:3px;height:6px;margin-top:2px}
+.fcard .bars i{flex:1;border-radius:3px;background:var(--selected)}
+.fs-back{margin-bottom:16px}
+@container (max-width:760px){
+  .fp{grid-template-columns:minmax(0,1fr);gap:16px}
+  .fp-nav{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:4px}
+  .fp-nav .navhead{display:none}
+  .fp-nav .nav{flex:0 0 auto;width:auto;border:1px solid var(--border);border-radius:999px;min-height:28px;padding:4px 10px}
+  .fp-nav .nav .lbl{white-space:nowrap}
+  .item{grid-template-columns:minmax(0,1fr);padding:12px 14px 14px}
+  .ctl,.ctl.money,.ctl.md,.ctl.sm{flex:1 1 100%}
+}
+@container (max-width:640px){
+  .content{padding:20px 16px 40px}
+  .r-forms{grid-template-columns:16px 60px minmax(0,1fr) auto}
+  .r-forms .c-due,.r-forms .c-freq{display:none}
+  .r-due{grid-template-columns:44px minmax(0,1fr) auto}
+  .r-due .code,.r-due .c-in{display:none}
+  .r-tpl{grid-template-columns:60px minmax(0,1fr) auto}
+  .r-tpl .c-count{display:none}
+  .r-filed{grid-template-columns:60px minmax(0,1fr) auto}
+  .r-filed .c-date{display:none}
+  .fields{grid-template-columns:minmax(0,1fr)}
+  .disc-body{padding:4px 16px 16px 16px}
+}
+@media (max-width:860px){
+  .sidebar{position:absolute;top:40px;bottom:0;left:0;z-index:30;background:var(--bg);box-shadow:var(--pop);border-right:1px solid var(--border)}
+  .window .main,.window.sb-hidden .main{margin:0 8px 8px 8px}
+  .rpanel{position:absolute;top:40px;bottom:0;right:0;width:min(320px,100%);z-index:30;background:var(--bg);box-shadow:var(--pop);border-left:1px solid var(--border)}
+  .window.panel-open .main{margin-right:8px}
+}
+@media (max-width:600px){
+  .pill .nm,.pill .tin{display:none}
+  .pill .bc{display:inline}
+  .tb-left .hist{display:none}
+  .comp-spec{grid-template-columns:minmax(0,1fr)}
+  .ds-in{padding:24px 16px 48px}
+  .ph-actions{width:100%}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="page">
+  <div class="proto">
+    <span class="ttl">eBIRForms shell</span>
+    <span class="sub">Redesign prototype · sample taxpayers, not real data</span>
+    <span class="grow"></span>
+    <label>Platform <span class="seg" id="seg-platform"><button data-act="platform:win" aria-pressed="true">Windows</button><button data-act="platform:mac" aria-pressed="false">macOS</button></span></label>
+    <label>Theme <span class="seg" id="seg-theme"><button data-act="theme:light"><i data-i="sun"></i>Light</button><button data-act="theme:dark"><i data-i="moon"></i>Dark</button><button data-act="theme:system"><i data-i="monitor"></i>System</button></span></label>
+    <span class="seg" id="seg-mode"><button data-act="mode:shell" aria-pressed="true">App</button><button data-act="mode:ds" aria-pressed="false">Components</button><button data-act="mode:forms" aria-pressed="false">Forms</button></span>
+  </div>
+
+  <div class="window win" id="win">
+    <header class="titlebar">
+      <div class="tb-left">
+        <span class="lights" aria-hidden="true"><span></span><span></span><span></span></span>
+        <button class="ibtn" data-act="toggle-sidebar" aria-label="Toggle sidebar (Ctrl+B)" title="Toggle sidebar (Ctrl+B)"><i data-i="panelLeft"></i></button>
+        <button class="ibtn hist" id="b-back" data-act="back" aria-label="Back" title="Back"><i data-i="arrowLeft"></i></button>
+        <button class="ibtn hist" id="b-fwd" data-act="fwd" aria-label="Forward" title="Forward"><i data-i="arrowRight"></i></button>
+        <button class="ibtn collapsed-only" data-act="search" aria-label="Search (Ctrl+K)" title="Search (Ctrl+K)"><i data-i="search"></i></button>
+        <button class="ibtn collapsed-only" data-act="new" aria-label="New return" title="New return"><i data-i="plus"></i></button>
+      </div>
+      <button class="pill" id="pill" data-act="pill" aria-expanded="false" aria-label="Tax profile"></button>
+      <div class="tb-right">
+        <button class="ibtn" id="b-bell" data-act="bell" aria-pressed="false" aria-label="Notifications" title="Notifications"><i data-i="bell"></i><span class="dot" id="bell-dot"></span></button>
+        <button class="ibtn" id="b-theme" data-act="cycle-theme" aria-label="Theme" title="Theme"></button>
+        <div class="wc" aria-hidden="true">
+          <button tabindex="-1"><svg viewBox="0 0 10 10"><path d="M0 5.5h10"/></svg></button>
+          <button tabindex="-1"><svg viewBox="0 0 10 10"><rect x=".5" y=".5" width="9" height="9" rx="1"/></svg></button>
+          <button tabindex="-1" class="close"><svg viewBox="0 0 10 10"><path d="M0 0l10 10M10 0L0 10"/></svg></button>
+        </div>
+      </div>
+    </header>
+    <div class="body">
+      <aside class="sidebar" aria-label="Sidebar">
+        <div class="sb-top">
+          <button class="searchbtn" data-act="search"><i data-i="search"></i><span class="lbl">Search</span><kbd id="kbd">Ctrl K</kbd></button>
+          <button class="ibtn" data-act="new" aria-label="New return" title="New return"><i data-i="plus"></i></button>
+        </div>
+        <nav class="sb-scroll" id="sb-nav"></nav>
+        <div class="sb-foot" id="sb-foot"></div>
+      </aside>
+      <main class="main"><div class="main-scroll" id="main-scroll"><div class="content" id="content"></div></div></main>
+      <aside class="rpanel" id="rpanel" aria-label="Side panel"></aside>
+    </div>
+    <div id="overlay-root"></div>
+  </div>
+
+  <section class="ds" id="ds" hidden><div class="ds-in" id="ds-in"></div></section>
+  <section class="ds fp-wrap" id="fs" hidden><div class="fs-in" id="fs-in"></div></section>
+</div>
+<div id="sheet-root"></div>
+<script type="application/json" id="forms-data">__FORMS_JSON__</script>
+
+<script>
+const P={
+ panelLeft:'<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/>',
+ arrowLeft:'<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+ arrowRight:'<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+ search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+ plus:'<path d="M5 12h14"/><path d="M12 5v14"/>',
+ bell:'<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>',
+ sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+ moon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+ monitor:'<rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/>',
+ settings:'<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+ home:'<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+ calendar:'<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+ file:'<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+ history:'<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>',
+ chevDown:'<path d="m6 9 6 6 6-6"/>',
+ chevRight:'<path d="m9 18 6-6-6-6"/>',
+ upDown:'<path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/>',
+ pencil:'<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>',
+ check:'<path d="M20 6 9 17l-5-5"/>',
+ x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+ building:'<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>',
+ pin:'<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
+ template:'<rect width="18" height="7" x="3" y="3" rx="1"/><rect width="9" height="7" x="3" y="14" rx="1"/><rect width="5" height="7" x="16" y="14" rx="1"/>',
+ user:'<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+ logout:'<path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>',
+ lock:'<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+ copy:'<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+ branch:'<line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>',
+ checkCircle:'<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+ alert:'<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+ upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>',
+ hash:'<line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/>',
+};
+const ic=(n,c='')=>`<svg class="i ${c}" viewBox="0 0 24 24" aria-hidden="true">${P[n]||''}</svg>`;
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function hydrate(root){root.querySelectorAll('i[data-i]').forEach(el=>{el.outerHTML=ic(el.dataset.i,el.className)})}
+
+/* ---------- sample data ---------- */
+const FORMS={
+ '1601-C':{name:'Monthly Remittance Return of Income Taxes Withheld on Compensation',freq:'Monthly',due:'Nov 10',period:'October 2026'},
+ '0619-E':{name:'Monthly Remittance Form for Creditable Income Taxes Withheld (Expanded)',freq:'Monthly',due:'Nov 10',period:'October 2026'},
+ '1601-EQ':{name:'Quarterly Remittance Return of Creditable Income Taxes Withheld (Expanded)',freq:'Quarterly',due:'Oct 31',period:'Q3 2026'},
+ '2550Q':{name:'Quarterly Value-Added Tax Return',freq:'Quarterly',due:'Oct 25',period:'Q3 2026'},
+ '2551Q':{name:'Quarterly Percentage Tax Return',freq:'Quarterly',due:'Oct 25',period:'Q3 2026'},
+ '1702Q':{name:'Quarterly Income Tax Return for Corporations',freq:'Quarterly',due:'Nov 29',period:'Q3 2026'},
+ '1701Q':{name:'Quarterly Income Tax Return for Individuals',freq:'Quarterly',due:'Nov 15',period:'Q3 2026'},
+ '1702-RT':{name:'Annual Income Tax Return for Corporations (Regular Rate)',freq:'Annual',due:'Apr 15, 2027',period:'TY 2026'},
+ '1701':{name:'Annual Income Tax Return for Individuals',freq:'Annual',due:'Apr 15, 2027',period:'TY 2026'},
+ '1604-C':{name:'Annual Information Return of Income Taxes Withheld on Compensation',freq:'Annual',due:'Jan 31, 2027',period:'2026'},
+};
+const PACKS={'Non-VAT business':['2551Q','1701Q','1701','0619-E','1601-EQ'],'VAT business':['2550Q','1702Q','1702-RT','0619-E','1601-EQ'],'Employer':['1601-C','1604-C'],'Professional':['1701Q','1701','2551Q']};
+const DATA=[
+ {id:'gc',name:'Goldcoders Corp',tin:'009-123-456',type:'Corporation',hue:222,
+  forms:new Set(['1601-C','0619-E','1601-EQ','2550Q','1702Q','1702-RT','1604-C']),
+  templates:{'00000':{'1601-C':{kept:6,marked:2,updated:'Sep 9, 2026'},'2550Q':{kept:4,marked:3,updated:'Jul 20, 2026'}},'00001':{}},
+  branches:[
+   {code:'00000',name:'Head office',location:'Makati City, Metro Manila',rdo:'050 · South Makati',address:'12F Ayala Tower One, Ayala Avenue, Makati City',zip:'1226',phone:'(02) 8812 4400',email:'tax@goldcoders.ph'},
+   {code:'00001',name:'Cebu branch',location:'Cebu City, Cebu',rdo:'081 · Cebu City North',address:'3F Cebu Business Park Tower, Cebu City',zip:'6000',phone:null,email:null},
+  ]},
+ {id:'maria',name:'Maria Santos Dela Cruz',tin:'234-567-890',type:'Individual · Professional',hue:340,
+  forms:new Set(['1701Q','1701','2551Q']),templates:{'00000':{'1701Q':{kept:5,marked:1,updated:'Aug 14, 2026'}}},
+  branches:[{code:'00000',name:'Head office',location:'Quezon City, Metro Manila',rdo:'038 · North Quezon City',address:'21 Maginhawa St., Teachers Village, Quezon City',zip:'1101',phone:'0917 555 0142',email:'maria.dc@example.com'}]},
+ {id:'nena',name:'Sari-Sari ni Aling Nena',tin:'345-678-901',type:'Individual · Sole proprietor',hue:150,
+  forms:new Set(['2551Q','1701Q','1701']),templates:{'00000':{}},
+  branches:[{code:'00000',name:'Head office',location:'Pasig City, Metro Manila',rdo:'043 · Pasig City',address:'88 Dr. Sixto Antonio Ave., Caniogan, Pasig City',zip:'1606',phone:'0928 555 0199',email:null}]},
+];
+const DUE=[
+ {date:'2026-10-25',code:'2550Q',period:'Q3 2026',tp:'gc',br:'00000',status:'Draft'},
+ {date:'2026-10-25',code:'2551Q',period:'Q3 2026',tp:'nena',br:'00000',status:'Not started'},
+ {date:'2026-10-31',code:'1601-EQ',period:'Q3 2026',tp:'gc',br:'00000',status:'Not started'},
+ {date:'2026-11-10',code:'1601-C',period:'October 2026',tp:'gc',br:'00000',status:'Not started'},
+ {date:'2026-11-10',code:'0619-E',period:'October 2026',tp:'gc',br:'00001',status:'Not started'},
+ {date:'2026-11-15',code:'1701Q',period:'Q3 2026',tp:'maria',br:'00000',status:'Draft'},
+ {date:'2026-11-29',code:'1702Q',period:'Q3 2026',tp:'gc',br:'00000',status:'Not started'},
+ {date:'2027-01-31',code:'1604-C',period:'2026',tp:'gc',br:'00000',status:'Not started'},
+ {date:'2027-04-15',code:'1702-RT',period:'TY 2026',tp:'gc',br:'00000',status:'Not started'},
+];
+const FILED=[
+ {date:'Oct 9, 2026',code:'1601-C',period:'September 2026',tp:'gc',br:'00000'},
+ {date:'Oct 9, 2026',code:'0619-E',period:'September 2026',tp:'gc',br:'00000'},
+ {date:'Oct 8, 2026',code:'0619-E',period:'September 2026',tp:'gc',br:'00001'},
+ {date:'Aug 14, 2026',code:'1701Q',period:'Q2 2026',tp:'maria',br:'00000'},
+ {date:'Jul 24, 2026',code:'2550Q',period:'Q2 2026',tp:'gc',br:'00000'},
+ {date:'Jul 23, 2026',code:'2551Q',period:'Q2 2026',tp:'nena',br:'00000'},
+];
+const NOTIFS=[
+ {t:'2550Q for Q3 2026 is due in 11 days',s:'Goldcoders Corp · Head office',when:'2h ago',kind:'warning',icon:'alert',unread:true},
+ {t:'1601-C for September 2026 was filed',s:'Confirmation email received from BIR',when:'Oct 9',kind:'success',icon:'checkCircle',unread:true},
+ {t:'Backup finished',s:'bir_backup_2026-10-12.zip · 4.2 MB',when:'Oct 12',kind:'',icon:'upload',unread:false},
+ {t:'2027 tax calendar is available',s:'Next year’s deadlines were added to Calendar',when:'Oct 2',kind:'',icon:'calendar',unread:false},
+];
+const RECENT=[{code:'2550Q',period:'Q3 2026',tp:'gc'},{code:'1701Q',period:'Q3 2026',tp:'maria'},{code:'1601-C',period:'Sep 2026',tp:'gc'},{code:'2551Q',period:'Q2 2026',tp:'nena'}];
+const TODAY=new Date('2026-10-14T00:00:00');
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTHS_L=['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+/* ---------- state ---------- */
+const S={platform:'win',theme:'system',mode:'shell',sidebar:true,panel:null,view:'home',tp:'gc',br:'00000',year:2026,
+  editPanel:false,panelErr:null,editSec:null,open:{taxpayer:true,branch:true,address:true,security:false},
+  menu:false,overlay:null,palQ:'',palIdx:0,newSel:null,hist:[],fwd:[],showRecent:true,lockAfter:'15m',copyPrompt:true,
+  formCode:null,formPeriod:null,formMode:null,fsForm:null,fsQ:'',fsFreq:'All'};
+const tp=()=>DATA.find(t=>t.id===S.tp);
+const br=()=>tp().branches.find(b=>b.code===S.br)||tp().branches[0];
+const ho=()=>tp().branches[0];
+const val=(b,f)=>b[f]??ho()[f];
+const inh=(b,f)=>b.code!=='00000'&&b[f]==null;
+const tpById=id=>DATA.find(t=>t.id===id);
+const initials=n=>{const c=n.split(/\s+/).filter(w=>/^[A-Z]/.test(w));return (c[0]?.[0]||'?')+(c.length>1?c[c.length-1][0]:'')};
+const av=(name,hue,s)=>`<span class="av s${s}" style="--h:${hue}" aria-hidden="true">${esc(initials(name))}</span>`;
+const tplOf=(t,code)=>t.templates[S.br]?.[code];
+const daysUntil=iso=>Math.round((new Date(iso+'T00:00:00')-TODAY)/864e5);
+const statusChip=s=>s==='Draft'?`<span class="chip accent">Draft</span>`:s==='Filed'?`<span class="chip success">${ic('check')}Filed</span>`:`<span class="chip">Not started</span>`;
+const isMac=()=>S.platform==='mac';
+
+function go(view){if(view!==S.view){S.hist.push(S.view);S.fwd=[];S.view=view;S.editSec=null}S.menu=false;if(matchMedia('(max-width:860px)').matches)S.sidebar=false;render();document.getElementById('main-scroll').scrollTop=0}
+
+/* ---------- renderers ---------- */
+function renderChrome(){
+  const w=document.getElementById('win');
+  w.classList.toggle('mac',isMac());w.classList.toggle('win',!isMac());
+  w.classList.toggle('sb-hidden',!S.sidebar);w.classList.toggle('panel-open',!!S.panel);
+  w.hidden=S.mode!=='shell';document.getElementById('ds').hidden=S.mode!=='ds';document.getElementById('fs').hidden=S.mode!=='forms';
+  document.getElementById('b-back').disabled=!S.hist.length;
+  document.getElementById('b-fwd').disabled=!S.fwd.length;
+  document.getElementById('b-bell').setAttribute('aria-pressed',S.panel==='notifs');
+  document.getElementById('bell-dot').hidden=!NOTIFS.some(n=>n.unread);
+  const tIcon={light:'sun',dark:'moon',system:'monitor'}[S.theme];
+  const tb=document.getElementById('b-theme');tb.innerHTML=ic(tIcon);tb.title=tb.ariaLabel=`Theme: ${S.theme} (click to change)`;
+  document.getElementById('kbd').textContent=isMac()?'⌘K':'Ctrl K';
+  for(const [id,key] of [['seg-platform',S.platform],['seg-theme',S.theme],['seg-mode',S.mode]])
+    document.querySelectorAll(`#${id} button`).forEach(b=>b.setAttribute('aria-pressed',b.dataset.act.split(':')[1]===key));
+  const t=tp(),b=br();
+  const pill=document.getElementById('pill');
+  pill.setAttribute('aria-expanded',S.panel==='profile');
+  pill.innerHTML=`${av(t.name,t.hue,20)}<span class="nm">${esc(t.name)}</span><span class="tin mono">${t.tin}-${b.code}</span><span class="bc mono">${b.code}</span>${ic('chevDown')}`;
+}
+function renderSidebar(){
+  const nav=[['home','home','Home'],['library','file','Form library'],['calendar','calendar','Calendar'],['filings','history','Filings']];
+  let h=nav.map(([v,i,l])=>`<button class="nav" data-act="go:${v}" ${S.view===v?'aria-current="page"':''}>${ic(i)}<span class="lbl">${l}</span></button>`).join('');
+  if(S.showRecent){
+    h+=`<div class="glabel">Recent</div>`+RECENT.map(r=>`<button class="nav" data-act="recent:${r.code}:${r.tp}" title="${r.code} ${r.period} · ${esc(tpById(r.tp).name)}">${ic('file')}<span class="lbl">${r.code} ${r.period} · ${esc(tpById(r.tp).name)}</span></button>`).join('');
+  }
+  document.getElementById('sb-nav').innerHTML=h;
+  document.getElementById('sb-foot').innerHTML=`
+    ${S.menu?`<div class="menu" role="menu"><div class="head">Signed in as juan@goldcoders.ph</div>
+      <button class="nav" data-act="toast:App locked. Enter your PIN to continue.">${ic('lock')}<span class="lbl">Lock app</span><kbd>${isMac()?'⌘L':'Ctrl L'}</kbd></button>
+      <button class="nav" data-act="go:settings">${ic('user')}<span class="lbl">Account settings</span></button>
+      <button class="nav" data-act="toast:Signed out.">${ic('logout')}<span class="lbl">Log out</span></button></div>`:''}
+    <button class="nav" data-act="go:settings" ${S.view==='settings'?'aria-current="page"':''}>${ic('settings')}<span class="lbl">Settings</span></button>
+    <button class="account" data-act="menu" aria-expanded="${S.menu}" aria-haspopup="menu">${av('Juan Dela Cruz',30,28)}<span class="who"><b>Juan Dela Cruz</b><span>juan@goldcoders.ph</span></span>${ic('upDown')}</button>`;
+}
+function renderPanel(){
+  const el=document.getElementById('rpanel');
+  if(S.panel==='notifs'){
+    el.innerHTML=`<div class="rp-head"><h2>Notifications</h2><button class="btn ghost sm" data-act="markall" ${NOTIFS.some(n=>n.unread)?'':'disabled'}>Mark all read</button></div>
+    <div class="rp-scroll">${NOTIFS.map(n=>`<div class="notif"><span class="ico ${n.kind}">${ic(n.icon)}</span><div class="tx"><b>${esc(n.t)}</b><span>${esc(n.s)}</span></div><div class="when">${n.when}${n.unread?'<span class="udot" aria-label="Unread"></span>':''}</div></div>`).join('')}</div>`;
+    return;
+  }
+  if(S.panel!=='profile'){el.innerHTML='';return}
+  const t=tp(),b=br(),multi=t.branches.length>1;
+  const hero=S.editPanel?`
+    <div class="p-edit">
+      <label>Registered name<input class="input" id="pe-name" value="${esc(t.name)}"></label>
+      <label>Branch code<input class="input mono ${S.panelErr?'err':''}" id="pe-code" value="${b.code}" inputmode="numeric" maxlength="5" ${b.code==='00000'?'disabled':''}>${S.panelErr?`<span class="errtxt">${S.panelErr}</span>`:''}</label>
+      <label>Branch name<input class="input" id="pe-bname" value="${esc(b.name)}"></label>
+      <label>Location<input class="input" id="pe-loc" value="${esc(b.location)}"></label>
+      <div class="form-actions" style="margin-top:4px"><button class="btn ghost sm" data-act="panel-cancel">Cancel</button><button class="btn primary sm" data-act="panel-save">Save</button></div>
+    </div>`:`
+    <div class="tp-hero">
+      <button class="ibtn edit" data-act="panel-edit" aria-label="Edit name, branch and location" title="Edit">${ic('pencil')}</button>
+      ${av(t.name,t.hue,56)}
+      <h3>${esc(t.name)}</h3>
+      <span class="tin mono">${t.tin}-${b.code}</span>
+    </div>
+    <dl class="facts">
+      <dt>${ic('branch')}Branch</dt><dd><span class="mono">${b.code}</span> · ${esc(b.name)}</dd>
+      <dt>${ic('pin')}Location</dt><dd>${esc(b.location)}</dd>
+      <dt>${ic('building')}RDO</dt><dd>${esc(b.rdo)}</dd>
+    </dl>`;
+  const open=[['profile','user','Profile',''],['forms','file','Forms',t.forms.size],['templates','template','Templates',Object.keys(t.templates[S.br]||{}).length]];
+  el.innerHTML=`<div class="rp-scroll" style="padding-top:4px">${hero}
+    <div class="glabel">Open</div>
+    ${open.map(([v,i,l,c])=>`<button class="nav" data-act="go:${v}" ${S.view===v?'aria-current="page"':''}>${ic(i)}<span class="lbl">${l}</span><span class="count">${c}</span></button>`).join('')}
+    <div class="glabel">${multi?'Branches':'Branch'}</div>
+    ${t.branches.map(x=>`<button class="nav" data-act="br:${x.code}" ${x.code===S.br?'aria-current="page"':''}><span class="code" style="width:44px">${x.code}</span><span class="lbl">${esc(x.name)}</span>${x.code===S.br?`<span class="trail">${ic('check')}</span>`:''}</button>`).join('')}
+    <button class="nav" data-act="toast:New branch opens with head-office details filled in.">${ic('plus')}<span class="lbl">Add branch</span></button>
+    <div class="glabel">Switch taxpayer</div>
+    ${DATA.filter(x=>x.id!==t.id).map(x=>`<button class="nav" data-act="tp:${x.id}">${av(x.name,x.hue,20)}<span class="lbl">${esc(x.name)}</span><span class="count mono">${x.tin.slice(0,3)}</span></button>`).join('')}
+    <button class="nav" data-act="toast:New taxpayer form opens in the main area.">${ic('plus')}<span class="lbl">New taxpayer</span></button>
+  </div>`;
+}
+function tpHead(){
+  const t=tp(),b=br(),nT=Object.keys(t.templates[S.br]||{}).length;
+  const tabs=[['profile','Profile',''],['forms','Forms',t.forms.size],['templates','Templates',nT]];
+  return `<div class="ph">${av(t.name,t.hue,40)}<div class="ph-text"><h1>${esc(t.name)}</h1>
+    <div class="meta"><span class="mono">${t.tin}-${b.code}</span><span class="sep-dot"></span><span>${esc(b.name)}</span><span class="sep-dot"></span><span>${esc(t.type)}</span></div></div>
+    <div class="ph-actions"><button class="btn secondary sm" data-act="copy-tin">${ic('copy')}Copy TIN</button><button class="btn primary sm" data-act="new">${ic('plus')}New return</button></div></div>
+    <div class="tabs" role="tablist">${tabs.map(([v,l,c])=>`<button class="tab" role="tab" data-act="go:${v}" aria-selected="${S.view===v}">${l}${c!==''?`<span class="count">${c}</span>`:''}</button>`).join('')}</div>`;
+}
+function disc(id,title,meta,body,editable){
+  const open=S.open[id],editing=S.editSec===id;
+  return `<div class="disc ${open?'open':''}"><div class="disc-head">
+    <button class="disc-toggle" data-act="disc:${id}" aria-expanded="${open}">${ic('chevRight','chev')}<span>${title}</span><span class="disc-meta">${meta}</span></button>
+    ${editable&&open&&!editing?`<button class="btn ghost sm" data-act="edit:${id}">${ic('pencil')}Edit</button>`:''}
+  </div><div class="disc-body">${body}</div></div>`;
+}
+function field(label,f,value,opt={}){
+  const editing=S.editSec===opt.sec;
+  const inherited=opt.inheritable&&inh(br(),f);
+  let dt=`<span>${label}</span>`;
+  if(opt.inheritable&&br().code!=='00000'){
+    dt+=`<span class="grow"></span>`+(editing?`<span class="inh-ctl">Same as head office<button class="switch" role="switch" data-act="inherit:${f}" aria-checked="${inherited}" aria-label="${label}: same as head office"></button></span>`:inherited?`<span class="chip">${ic('branch')}Head office</span>`:'');
+  }
+  const dd=editing&&!opt.readonly?`<input class="input ${opt.mono?'mono':''}" data-f="${f}" value="${esc(value??'')}" ${inherited?'disabled':''} id="f-${f}">`:`<span class="${opt.mono?'mono':''}">${value?esc(value):'<span style="color:var(--fg-3)">Not set</span>'}</span>`;
+  return `<div class="field ${opt.full?'full':''} ${inherited?'inh':''}"><dt>${dt}</dt><dd>${dd}</dd></div>`;
+}
+const actions=sec=>S.editSec===sec?`<div class="form-actions"><button class="btn ghost sm" data-act="cancel-sec">Cancel</button><button class="btn primary sm" data-act="save-sec:${sec}">Save changes</button></div>`:'';
+function viewProfile(){
+  const t=tp(),b=br(),isHO=b.code==='00000';
+  const inhCount=['address','zip','phone','email'].filter(f=>inh(b,f)).length;
+  return tpHead()+`<div class="disc-group">
+   ${disc('taxpayer','Taxpayer','Shared by every branch',`<dl class="fields">
+      ${field('Registered name','name',t.name,{sec:'taxpayer',full:true})}
+      ${field('TIN','tin',t.tin,{sec:'taxpayer',mono:true,readonly:true})}
+      ${field('Taxpayer type','type',t.type,{sec:'taxpayer'})}
+    </dl>${actions('taxpayer')}`,true)}
+   ${disc('branch','Branch',isHO?'Head office':'Branch '+b.code,`<dl class="fields">
+      ${field('Branch code','code',b.code,{sec:'branch',mono:true,readonly:true})}
+      ${field('Branch name','bname',b.name,{sec:'branch'})}
+      ${field('RDO','rdo',b.rdo,{sec:'branch'})}
+      ${field('Location','location',b.location,{sec:'branch'})}
+    </dl>${actions('branch')}`,true)}
+   ${disc('address','Address and contact',isHO?'Used on every return':inhCount?`${inhCount} of 4 from head office`:'All set for this branch',`<dl class="fields">
+      ${field('Registered address','address',val(b,'address'),{sec:'address',full:true,inheritable:true})}
+      ${field('ZIP code','zip',val(b,'zip'),{sec:'address',mono:true,inheritable:true})}
+      ${field('Phone','phone',val(b,'phone'),{sec:'address',inheritable:true})}
+      ${field('Email','email',val(b,'email'),{sec:'address',full:true,inheritable:true})}
+    </dl>${actions('address')}`,true)}
+   ${disc('security','Email, security and export','Set once for the taxpayer',`<div>
+      <div class="srow"><div class="txt"><b>Filing confirmation emails</b><span>Match BIR confirmation emails to filed returns</span></div><button class="switch" role="switch" aria-checked="true" data-act="toggle-sw" aria-label="Filing confirmation emails"></button></div>
+      <div class="srow"><div class="txt"><b>Profile PIN</b><span>Ask for a PIN before opening this taxpayer</span></div><button class="btn secondary sm" data-act="toast:PIN setup opens here.">Set PIN</button></div>
+      <div class="srow"><div class="txt"><b>Export</b><span>Last export Oct 12, 2026</span></div><button class="btn secondary sm" data-act="toast:Export saved to Downloads.">Export</button></div>
+    </div>`,false)}
+  </div>`;
+}
+function viewForms(){
+  const t=tp();
+  const codes=Object.keys(FORMS).sort((a,b)=>(t.forms.has(b)-t.forms.has(a)));
+  const banner=S.year===2027&&!S.copied?`<div class="banner"><p><b>Copy 2026 forms to 2027?</b> ${t.forms.size} forms and their templates carry over. Amounts never do.</p><button class="btn ghost sm" data-act="year:2026">Not now</button><button class="btn primary sm" data-act="copy-year">Copy forms</button></div>`:'';
+  return tpHead()+banner+`<div class="toolbar">
+    <span class="seg">${[2025,2026,2027].map(y=>`<button data-act="year:${y}" aria-pressed="${S.year===y}">${y}</button>`).join('')}</span>
+    <span class="grow"></span>
+    <span class="packs"><span class="lbl">Starter packs</span>${Object.keys(PACKS).map(p=>`<button class="btn secondary sm" data-act="pack:${p}">${p}</button>`).join('')}</span>
+  </div>
+  <div class="list">${codes.map(c=>{const f=FORMS[c],on=t.forms.has(c),tpl=tplOf(t,c);return `
+    <div class="row r-forms ${on?'':'dim'}">
+      <button class="check" role="checkbox" aria-checked="${on}" data-act="include:${c}" aria-label="File ${c} in ${S.year}">${ic('check')}</button>
+      <span class="code">${c}</span>
+      <span class="rname"><b>${esc(f.name)}</b><span>${on?`Next: ${f.period}`:'Not filed this year'}</span></span>
+      <span class="c-freq"><span class="chip">${f.freq}</span></span>
+      <span class="num c-due">${on?'Due '+f.due:''}</span>
+      <span>${on?(tpl?`<span class="chip success">${ic('template')}Template</span>`:`<span class="chip">No template</span>`):''}</span>
+    </div>`}).join('')}</div>`;
+}
+function viewTemplates(){
+  const t=tp(),codes=[...t.forms];
+  return tpHead()+`<div class="toolbar"><p class="lede" style="margin:0;flex:1">One template per form for this branch. A template keeps setup answers and marks the fields to fill each period. It never keeps amounts.</p></div>
+  <div class="list">${codes.map(c=>{const tpl=tplOf(t,c);return `
+    <div class="row r-tpl ${tpl?'':'dim'}">
+      <span class="code">${c}</span>
+      <span class="rname"><b>${esc(FORMS[c].name)}</b><span>${tpl?'Updated '+tpl.updated:'No template yet'}</span></span>
+      <span class="num c-count">${tpl?`${tpl.kept} kept · ${tpl.marked} marked`:''}</span>
+      <span style="justify-self:end">${tpl?`<button class="btn ghost sm" data-act="form-tpl:${c}">Open</button>`:`<button class="btn secondary sm" data-act="mk-tpl:${c}">${ic('plus')}Create</button>`}</span>
+    </div>`}).join('')}</div>`;
+}
+function dueRow(d){
+  const dt=new Date(d.date+'T00:00:00'),t=tpById(d.tp),n=daysUntil(d.date);
+  const when=n<=14?`<span class="chip warning">In ${n} days</span>`:`<span class="num">In ${n} days</span>`;
+  const brn=t.branches.find(x=>x.code===d.br);
+  return `<div class="row r-due click" data-act="open-due:${d.tp}:${d.br}:${d.code}">
+    <span class="datebox"><small>${MONTHS[dt.getMonth()].toUpperCase()}</small><b>${dt.getDate()}</b></span>
+    <span class="code">${d.code}</span>
+    <span class="rname"><b>${d.code} · ${d.period}</b><span>${esc(t.name)}${t.branches.length>1?' · '+esc(brn.name):''}</span></span>
+    <span class="c-in">${when}</span>
+    <span style="justify-self:end">${statusChip(d.status)}</span></div>`;
+}
+function viewHome(){
+  const soon=DUE.filter(d=>daysUntil(d.date)<=30);
+  const tps=new Set(soon.map(d=>d.tp)).size;
+  return `<div class="ph"><div class="ph-text"><h1>Good afternoon, Juan</h1><p class="lede">${soon.length} returns are due in the next 30 days across ${tps} taxpayers. Wednesday, October 14, 2026.</p></div></div>
+  <h2 class="sec" style="margin-top:28px">Due in the next 30 days</h2><div class="list">${soon.map(dueRow).join('')}</div>
+  <h2 class="sec">Recently filed</h2><div class="list">${FILED.slice(0,3).map(filedRow).join('')}</div>`;
+}
+function viewCalendar(){
+  const groups={};DUE.forEach(d=>{const dt=new Date(d.date+'T00:00:00');const k=`${MONTHS_L[dt.getMonth()]} ${dt.getFullYear()}`;(groups[k]=groups[k]||[]).push(d)});
+  return `<div class="ph"><div class="ph-text"><h1>Calendar</h1><p class="lede">Every deadline for the forms your taxpayers file, from the 2026 BIR tax calendar.</p></div></div>`+
+   Object.entries(groups).map(([k,ds])=>`<h2 class="sec" style="margin-top:28px">${k}</h2><div class="list">${ds.map(dueRow).join('')}</div>`).join('');
+}
+function filedRow(f){
+  const t=tpById(f.tp),has=t.templates[f.br]?.[f.code];
+  return `<div class="row r-filed"><span class="code">${f.code}</span>
+    <span class="rname"><b>${f.code} · ${f.period}</b><span>${esc(t.name)}${t.branches.length>1?' · '+esc(t.branches.find(x=>x.code===f.br).name):''}</span></span>
+    <span class="num c-date">${f.date}</span>
+    <span style="justify-self:end">${has?`<span class="chip success">${ic('check')}Filed</span>`:`<button class="btn secondary sm" data-act="use-tpl:${f.tp}:${f.br}:${f.code}">${ic('template')}Use as template</button>`}</span></div>`;
+}
+function viewFilings(){
+  return `<div class="ph"><div class="ph-text"><h1>Filings</h1><p class="lede">Filed returns stay exactly as submitted. Use one as a template to prefill the next period.</p></div></div>
+  <div class="list" style="margin-top:24px">${FILED.map(filedRow).join('')}</div>`;
+}
+function viewSettings(){
+  const sw=(k,l)=>`<button class="switch" role="switch" data-act="set:${k}" aria-checked="${S[k]}" aria-label="${l}"></button>`;
+  return `<div class="ph"><div class="ph-text"><h1>Settings</h1><p class="lede">App-wide preferences for this computer. Taxpayer details live in each tax profile.</p></div></div>
+  <h2 class="sec" style="margin-top:28px">Appearance</h2><div class="card">
+    <div class="srow"><div class="txt"><b>Theme</b><span>System follows your ${isMac()?'macOS':'Windows'} setting</span></div><span class="seg">${['light','dark','system'].map(x=>`<button data-act="theme:${x}" aria-pressed="${S.theme===x}">${x[0].toUpperCase()+x.slice(1)}</button>`).join('')}</span></div>
+    <div class="srow"><div class="txt"><b>Show recent returns in the sidebar</b><span>The last four returns you opened</span></div>${sw('showRecent','Show recent returns')}</div>
+  </div>
+  <h2 class="sec">Returns</h2><div class="card">
+    <div class="srow"><div class="txt"><b>Ask to update the template on save</b><span>When a saved return differs from its template</span></div>${sw('copyPrompt','Ask to update template')}</div>
+  </div>
+  <h2 class="sec">Data</h2><div class="card">
+    <div class="srow"><div class="txt"><b>Import data</b><span>Bring in returns saved by the official eBIRForms app</span></div><button class="btn secondary sm" data-act="toast:Choose an eBIRForms savefile folder.">${ic('upload')}Import</button></div>
+    <div class="srow"><div class="txt"><b>Back up now</b><span>Last backup Oct 12, 2026 · 4.2 MB</span></div><button class="btn secondary sm" data-act="toast:Backup started.">Back up</button></div>
+  </div>
+  <h2 class="sec">Background tasks</h2><div class="card">
+    <div class="srow"><div class="txt"><b>Deadline reminders</b><span>Daily at 8:00 AM</span></div><span class="chip success">Running</span></div>
+    <div class="srow"><div class="txt"><b>Confirmation email check</b><span>Every 15 minutes</span></div><span class="chip success">Running</span></div>
+    <div class="srow"><div class="txt"><b>Weekly backup</b><span>Sundays at 9:00 PM</span></div><span class="chip">Paused</span></div>
+  </div>
+  <h2 class="sec">Security</h2><div class="card">
+    <div class="srow"><div class="txt"><b>Lock after inactivity</b><span>Asks for your account PIN</span></div><span class="seg">${['5m','15m','Never'].map(x=>`<button data-act="lock:${x}" aria-pressed="${S.lockAfter===x}">${x}</button>`).join('')}</span></div>
+  </div>`;
+}
+function renderMain(){
+  const v={home:viewHome,calendar:viewCalendar,filings:viewFilings,settings:viewSettings,profile:viewProfile,forms:viewForms,templates:viewTemplates,library:viewLibrary,form:viewForm}[S.view];
+  const c=document.getElementById('content');c.className='content'+(S.view==='form'||S.view==='library'?' wide':'');
+  c.innerHTML=v();
+}
+function paletteItems(){
+  const q=S.palQ.trim().toLowerCase();
+  const items=[
+   ...DATA.map(t=>({g:'Taxpayers',l:t.name,h:t.tin,a:`tp:${t.id}`,av:t})),
+   ...[['home','home','Home'],['calendar','calendar','Calendar'],['filings','history','Filings'],['profile','user','Tax profile'],['forms','file','Forms'],['templates','template','Templates'],['settings','settings','Settings']].map(([v,i,l])=>({g:'Go to',l,i,a:`go:${v}`})),
+   ...SCHEMA.map(f=>({g:'Forms',l:`${f.c} · ${f.t}`,i:'file',a:`form:${f.c}`})),
+   {g:'Actions',l:'Toggle sidebar',i:'panelLeft',a:'toggle-sidebar',h:isMac()?'⌘B':'Ctrl B'},
+   {g:'Actions',l:'Change theme',i:'moon',a:'cycle-theme'},
+  ];
+  return q?items.filter(x=>(x.l+' '+(x.h||'')).toLowerCase().includes(q)):items.filter(x=>x.g!=='Forms');
+}
+function renderOverlay(){
+  const root=document.getElementById('overlay-root');
+  if(S.overlay==='palette'){
+    const items=paletteItems();S.palIdx=Math.min(S.palIdx,Math.max(0,items.length-1));
+    let g='',body='';items.forEach((x,i)=>{if(x.g!==g){g=x.g;body+=`<div class="pgroup">${g}</div>`}
+      body+=`<button class="opt ${i===S.palIdx?'on':''}" data-act="${x.a}" data-close="1">${x.av?av(x.av.name,x.av.hue,20):ic(x.i)}<span class="lbl">${esc(x.l)}</span>${x.h?`<span class="hint mono">${x.h}</span>`:''}</button>`});
+    const existing=root.querySelector('#pal-q');
+    if(existing){root.querySelector('#pal-list').innerHTML=body||'<div class="empty">No matches. Try a form code like 2550Q.</div>';return}
+    root.innerHTML=`<div class="overlay" data-act="close-overlay"><div class="dialog" role="dialog" aria-label="Search" data-stop="1">
+      <div class="pal-input">${ic('search')}<input id="pal-q" placeholder="Search taxpayers, forms and pages" value="${esc(S.palQ)}" autocomplete="off"><kbd>Esc</kbd></div>
+      <div class="dlg-body" id="pal-list" style="max-height:min(420px,60vh)">${body}</div></div></div>`;
+    root.querySelector('#pal-q').focus();
+    return;
+  }
+  if(S.overlay==='new'){
+    const t=tp(),b=br(),codes=[...t.forms];if(!S.newSel||!t.forms.has(S.newSel))S.newSel=codes[0];
+    const f=FORMS[S.newSel];
+    const periods=f.freq==='Monthly'?['October 2026','September 2026','August 2026']:f.freq==='Quarterly'?['Q3 2026','Q2 2026','Q1 2026']:['TY 2026','TY 2025'];
+    const tpl=tplOf(t,S.newSel);
+    root.innerHTML=`<div class="overlay" data-act="close-overlay"><div class="dialog" role="dialog" aria-label="Start a return" data-stop="1">
+      <div class="dlg-head"><h2>Start a return</h2><p>${esc(t.name)} · <span class="mono">${t.tin}-${b.code}</span> ${esc(b.name)}</p></div>
+      <div class="dlg-body" style="max-height:min(360px,50vh)">${codes.map(c=>`<button class="opt" data-act="newsel:${c}" aria-selected="${c===S.newSel}"><span class="code" style="width:60px">${c}</span><span class="lbl">${esc(FORMS[c].name)}</span><span class="hint">${FORMS[c].freq}</span></button>`).join('')}</div>
+      <div class="dlg-foot" style="justify-content:space-between;flex-wrap:wrap">
+        <span style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><select class="select" id="new-period" aria-label="Period">${periods.map(p=>`<option>${p}</option>`).join('')}</select>${tpl?`<span class="chip success">${ic('template')}Template · ${tpl.marked} guided stops</span>`:`<span class="chip">No template</span>`}</span>
+        <span style="display:flex;gap:8px"><button class="btn ghost" data-act="close-overlay">Cancel</button><button class="btn primary" data-act="open-new">Open form</button></span>
+      </div></div></div>`;
+    return;
+  }
+  root.innerHTML='';
+}
+let toastTimer;
+function toast(msg){
+  const w=document.getElementById('win');let t=w.querySelector('.toast');
+  if(!t){t=document.createElement('div');t.className='toast';t.setAttribute('role','status');w.appendChild(t)}
+  t.innerHTML=ic('checkCircle')+`<span>${esc(msg)}</span>`;clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.remove(),3200);
+}
+function applyTheme(){if(S.theme==='system')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',S.theme)}
+function render(){applyTheme();renderChrome();renderSidebar();renderPanel();renderMain();renderOverlay();if(S.mode==='ds')renderDS();if(S.mode==='forms')renderFS()}
+
+/* ---------- actions ---------- */
+function act(a,el){
+  const [k,...rest]=a.split(':');const arg=rest.join(':');
+  switch(k){
+   case 'platform':S.platform=arg;try{localStorage.setItem('ebir-proto-platform',arg)}catch(e){}break;
+   case 'theme':S.theme=arg;break;
+   case 'cycle-theme':S.theme={light:'dark',dark:'system',system:'light'}[S.theme];break;
+   case 'mode':S.mode=arg;break;
+   case 'toggle-sidebar':S.sidebar=!S.sidebar;S.menu=false;break;
+   case 'back':if(S.hist.length){S.fwd.push(S.view);S.view=S.hist.pop()}break;
+   case 'fwd':if(S.fwd.length){S.hist.push(S.view);S.view=S.fwd.pop()}break;
+   case 'go':return go(arg);
+   case 'pill':S.panel=S.panel==='profile'?null:'profile';S.editPanel=false;break;
+   case 'bell':S.panel=S.panel==='notifs'?null:'notifs';break;
+   case 'markall':NOTIFS.forEach(n=>n.unread=false);break;
+   case 'search':S.overlay='palette';S.palQ='';S.palIdx=0;document.getElementById('overlay-root').innerHTML='';break;
+   case 'new':S.overlay='new';break;
+   case 'newform':{const t=tp();if(!t.forms.has(arg)){toast(`${tp().name} does not file ${arg} in ${S.year}. Add it under Forms first.`);break}S.newSel=arg;S.overlay='new';break}
+   case 'newsel':S.newSel=arg;break;
+   case 'open-new':{const p=document.getElementById('new-period').value,tpl=tplOf(tp(),S.newSel);S.overlay=null;S.formCode=normCode(S.newSel);S.formPeriod=p;S.formMode=null;go('form');toast(`Opened ${S.newSel} for ${p}${tpl?`. Template applied, ${tpl.marked} guided stops.`:'.'}`);return}
+   case 'sheet':S.sheet=S.sheet&&S.sheet.code===arg?null:{code:arg,doc:'index'};renderSheet();document.querySelectorAll('[data-act^="sheet:"]').forEach(b=>b.setAttribute('aria-pressed',!!S.sheet&&b.dataset.act==='sheet:'+S.sheet.code));return;
+   case 'sheet-doc':if(S.sheet){S.sheet.doc=arg;renderSheet()}return;
+   case 'sheet-close':S.sheet=null;renderSheet();document.querySelectorAll('[data-act^="sheet:"]').forEach(b=>b.setAttribute('aria-pressed','false'));return;
+   case 'form':if(S.sheet){S.sheet={code:normCode(arg),doc:'index'};renderSheet()}S.formCode=normCode(arg);S.formPeriod=null;S.formMode=null;S.overlay=null;return go('form');
+   case 'form-tpl':S.formCode=normCode(arg);S.formPeriod=null;S.formMode='template';return go('form');
+   case 'fs-open':if(S.sheet){S.sheet={code:arg,doc:'index'};renderSheet()}S.fsForm=arg;render();document.getElementById('fs').scrollTop=0;return;
+   case 'fs-back':S.fsForm=null;render();document.getElementById('fs').scrollTop=0;return;
+   case 'fs-freq':S.fsFreq=arg;document.querySelectorAll('.fs-tools .seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.act==='fs-freq:'+arg));renderFSGrid();return;
+   case 'jump':{const t=document.getElementById(arg);if(t){t.open=true;t.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'})}return}
+   case 'close-overlay':S.overlay=null;break;
+   case 'menu':S.menu=!S.menu;break;
+   case 'tp':S.tp=arg;S.br='00000';S.editPanel=false;S.editSec=null;toast(`Switched to ${tp().name}`);break;
+   case 'br':S.br=arg;S.editPanel=false;S.editSec=null;break;
+   case 'panel-edit':S.editPanel=true;S.panelErr=null;break;
+   case 'panel-cancel':S.editPanel=false;S.panelErr=null;break;
+   case 'panel-save':{const t=tp(),b=br();const code=document.getElementById('pe-code').value.trim();
+     if(b.code!=='00000'){if(!/^\d{5}$/.test(code)){S.panelErr='Branch code is 5 digits, like 00001.';break}
+       if(code==='00000'||t.branches.some(x=>x!==b&&x.code===code)){S.panelErr=`Branch ${code} already exists.`;break}
+       if(code!==b.code){t.templates[code]=t.templates[b.code]||{};delete t.templates[b.code];b.code=code;S.br=code}}
+     t.name=document.getElementById('pe-name').value.trim()||t.name;b.name=document.getElementById('pe-bname').value.trim()||b.name;b.location=document.getElementById('pe-loc').value.trim()||b.location;
+     S.editPanel=false;S.panelErr=null;toast('Tax profile saved');break}
+   case 'disc':S.open[arg]=!S.open[arg];if(!S.open[arg]&&S.editSec===arg)S.editSec=null;break;
+   case 'edit':S.editSec=arg;S.draftInh={};break;
+   case 'cancel-sec':S.editSec=null;break;
+   case 'inherit':{const b=br();if(b[arg]==null){b[arg]=ho()[arg]}else{b[arg]=null}break}
+   case 'save-sec':{const t=tp(),b=br();document.querySelectorAll('#content [data-f]').forEach(inp=>{if(inp.disabled)return;const f=inp.dataset.f,v=inp.value.trim();
+       if(arg==='taxpayer')t[f]=v||t[f];else if(arg==='branch'){b[f==='bname'?'name':f]=v||b[f==='bname'?'name':f]}else b[f]=v||null});
+     S.editSec=null;toast('Changes saved');break}
+   case 'year':S.year=+arg;break;
+   case 'copy-year':S.copied=true;toast(`Copied ${tp().forms.size} forms and their templates to 2027`);break;
+   case 'pack':{const t=tp(),add=PACKS[arg].filter(c=>!t.forms.has(c));add.forEach(c=>t.forms.add(c));toast(add.length?`Added ${add.length} form${add.length>1?'s':''} from ${arg}`:`Every ${arg} form is already on the list`);break}
+   case 'include':{const t=tp();t.forms.has(arg)?t.forms.delete(arg):t.forms.add(arg);break}
+   case 'mk-tpl':{const t=tp();(t.templates[S.br]=t.templates[S.br]||{})[arg]={kept:0,marked:0,updated:'Oct 14, 2026'};toast(`${arg} template created. Click fields on the blank form to mark them.`);break}
+   case 'use-tpl':{const [tid,bc,code]=arg.split(':');const t=tpById(tid);(t.templates[bc]=t.templates[bc]||{})[code]={kept:5,marked:0,updated:'Oct 14, 2026'};toast(`${code} template made from the filed return. Click fields to keep, mark or clear them.`);break}
+   case 'open-due':{const [tid,bc,code]=arg.split(':');S.tp=tid;S.br=bc;S.newSel=code;S.overlay='new';break}
+   case 'recent':{const [code,tid]=arg.split(':');S.tp=tid;S.br='00000';const r=RECENT.find(x=>x.code===code&&x.tp===tid);S.formCode=normCode(code);S.formPeriod=r?r.period:null;S.formMode=null;return go('form')}
+   case 'copy-tin':{const s=`${tp().tin}-${br().code}`;navigator.clipboard?.writeText(s).then(()=>toast(`Copied ${s}`),()=>toast(`TIN: ${s}`));if(!navigator.clipboard)toast(`TIN: ${s}`);return}
+   case 'set':S[arg]=!S[arg];break;
+   case 'lock':S.lockAfter=arg;break;
+   case 'toggle-sw':el.setAttribute('aria-checked',el.getAttribute('aria-checked')!=='true');return;
+   case 'toast':toast(arg);return;
+  }
+  render();
+}
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-act]');
+  if(!el){if(S.menu&&!e.target.closest('.menu')){S.menu=false;render()}return}
+  if(el.dataset.act==='close-overlay'&&el.classList.contains('overlay')&&e.target.closest('[data-stop]'))return;
+  if(el.closest('[data-stop]')&&el.classList.contains('overlay'))return;
+  if(el.disabled)return;
+  if(S.menu&&el.dataset.act!=='menu')S.menu=false;
+  if(el.dataset.close){S.overlay=null;document.getElementById('overlay-root').innerHTML=''}
+  act(el.dataset.act,el);
+});
+function keepValue(t){if(t.dataset&&t.dataset.fid)FV[t.dataset.fid]=t.type==='checkbox'?(t.checked?'1':''):t.value}
+document.addEventListener('input',e=>{const t=e.target;if(t.id==='pal-q'){S.palQ=t.value;S.palIdx=0;renderOverlay();return}if(t.id==='fs-q'){S.fsQ=t.value;renderFSGrid();return}keepValue(t)});
+document.addEventListener('change',e=>keepValue(e.target));
+document.addEventListener('focusout',e=>{const t=e.target;if(t.dataset&&t.dataset.money&&t.value&&!t.readOnly){const n=parseFloat(t.value.replace(/[^0-9.\-]/g,''));if(!isNaN(n)){t.value=n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});FV[t.dataset.fid]=t.value}}});
+document.addEventListener('keydown',e=>{
+  const mod=e.metaKey||e.ctrlKey;
+  if(mod&&e.key.toLowerCase()==='k'){e.preventDefault();if(S.mode==='shell')act('search')}
+  else if(mod&&e.key.toLowerCase()==='b'){e.preventDefault();act('toggle-sidebar')}
+  else if(e.key==='Escape'){if(S.sheet){act('sheet-close')}else if(S.overlay){S.overlay=null;render()}else if(S.menu){S.menu=false;render()}else if(S.editPanel){S.editPanel=false;render()}}
+  else if(S.overlay==='palette'&&['ArrowDown','ArrowUp','Enter'].includes(e.key)){
+    const items=paletteItems();if(!items.length)return;e.preventDefault();
+    if(e.key==='ArrowDown')S.palIdx=(S.palIdx+1)%items.length;
+    else if(e.key==='ArrowUp')S.palIdx=(S.palIdx-1+items.length)%items.length;
+    else{const a=items[S.palIdx].a;S.overlay=null;document.getElementById('overlay-root').innerHTML='';act(a);return}
+    renderOverlay();document.querySelector('.opt.on')?.scrollIntoView({block:'nearest'});
+  }
+});
+
+/* ---------- form pages: one renderer for all 43 forms ---------- */
+const SCHEMA=JSON.parse(document.getElementById('forms-data').textContent);
+const SCH=Object.fromEntries(SCHEMA.map(f=>[f.c,f]));
+const normCode=c=>String(c).replace(/-/g,'').toUpperCase();
+const FV={};
+const FREQS=['All','Monthly','Quarterly','Annual','As needed'];
+const fieldTotal=SCHEMA.reduce((n,f)=>n+f.n,0);
+function profileFill(label,itemLabel){
+  const t=tp(),b=br(),l=(label+' '+itemLabel).toLowerCase();
+  if(/zip/.test(l))return val(b,'zip')||'';
+  if(/e-?mail/.test(l))return val(b,'email')||'';
+  if(/tel|phone|contact/.test(l))return val(b,'phone')||'';
+  if(/\brdo\b/.test(l))return b.rdo.slice(0,3);
+  if(/address/.test(l))return val(b,'address')||'';
+  if(/name/.test(l))return t.name;
+  return '';
+}
+function ctrl(f,id,itemLabel,multi){
+  const showSub=multi&&f.l&&f.l!==itemLabel&&!/^\d+[A-Z]?$/.test(f.l);
+  const sub=showSub?`<span class="sub">${esc(f.l)}</span>`:'';
+  const aria=`aria-label="${esc(showSub?f.l:itemLabel)}"`;
+  const auto=f.a&&!f.c;
+  let v=FV[id];if(v==null&&auto)v=profileFill(f.l,itemLabel);v=v??'';
+  const lock=f.c||auto,ro=lock?'readonly':'',cls='input'+(lock?' auto':''),ml=f.m?` maxlength="${f.m}"`:'';
+  switch(f.t){
+    case 'money':return `<label class="ctl money">${sub}<span class="affix peso"><i>₱</i><input class="${cls}" data-fid="${id}" data-money="1" inputmode="decimal" placeholder="0.00" value="${esc(f.c&&!v?'0.00':v)}" ${ro} ${aria}></span></label>`;
+    case 'pct':return `<label class="ctl xs">${sub}<span class="affix pct"><input class="${cls}" data-fid="${id}" inputmode="decimal" value="${esc(v)}" ${ro} ${aria}><i>%</i></span></label>`;
+    case 'date':return `<label class="ctl sm">${sub}<input class="${cls}" type="date" data-fid="${id}" value="${esc(v)}" ${ro} ${aria}></label>`;
+    case 'sel':return `<label class="ctl md">${sub}<select class="select" style="width:100%" data-fid="${id}" ${aria} ${f.c?'disabled':''}><option value="">${auto&&v?esc(v):'Choose…'}</option>${(f.o||[]).map(o=>`<option ${o===v?'selected':''}>${esc(o)}</option>`).join('')}</select></label>`;
+    case 'chk':return `<label class="chkl"><input type="checkbox" data-fid="${id}" ${v==='1'?'checked':''} ${f.c?'disabled':''}>${esc(f.l||itemLabel)}</label>`;
+    case 'int':return `<label class="ctl ${f.m&&f.m<=4?'xs':'sm'}">${sub}<input class="${cls}" data-fid="${id}" inputmode="numeric"${ml} value="${esc(v)}" ${ro} ${aria}></label>`;
+    case 'email':return `<label class="ctl">${sub}<input class="${cls}" type="email" data-fid="${id}" value="${esc(v)}" ${ro} ${aria}></label>`;
+    default:return `<label class="ctl ${f.m&&f.m<=4?'xs':''}">${sub}<input class="${cls}" data-fid="${id}"${ml} value="${esc(v)}" ${ro} ${aria}></label>`;
+  }
+}
+function tableHtml(it,id){
+  let body='';
+  for(let r=0;r<it.rows;r++){
+    body+=`<tr><td class="n">${r+1}</td>${it.cols.map((c,k)=>{const fid=`${id}:${r}:${k}`,v=FV[fid]??'',lab=`${esc(c.l)}, row ${r+1}`;
+      if(c.t==='radio'||c.t==='chk')return `<td><input type="checkbox" data-fid="${fid}" ${v==='1'?'checked':''} aria-label="${lab}" style="width:16px;height:16px;margin:0;accent-color:var(--primary)"></td>`;
+      const m=c.t==='money';
+      return `<td class="${m?'money':''}"><input class="input${c.c?' auto':''}" data-fid="${fid}" ${m?'data-money="1" inputmode="decimal" placeholder="0.00"':''} value="${esc(c.c&&m&&!v?'0.00':v)}" ${c.c?'readonly':''} aria-label="${lab}"></td>`}).join('')}</tr>`;
+  }
+  return `<div class="tbl-in"><table><thead><tr><th class="n">#</th>${it.cols.map(c=>`<th>${esc(c.l)}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+function itemHtml(it,base,ix){
+  const id=`${base}:${ix}`,no=`<span class="ino ${it.no?'':'blank'}">${esc(it.no)}</span>`;
+  if(it.rows)return `<div class="item">${no}<div style="min-width:0"><div class="ilabel"><span class="tx">${esc(it.l)}</span><span class="chip">${it.rows} rows</span></div>${tableHtml(it,id)}</div></div>`;
+  const fs=it.f||[];
+  if(it.l==='Additional details')return `<div class="item">${no}<div style="min-width:0"><details class="more"><summary>${ic('chevRight','chev')}${fs.length} more field${fs.length>1?'s':''} not yet placed on the paper layout</summary><div class="ctrls">${fs.map((f,j)=>ctrl(f,`${id}:${j}`,f.l,true)).join('')}</div></details></div></div>`;
+  const isTin=/\bTIN\b|Identification Number/i.test(it.l)&&fs.length>=3&&fs.length<=5&&fs.every(x=>x.t==='text'||x.t==='int');
+  const allCalc=fs.length>0&&fs.every(x=>x.c),req=fs.some(x=>x.r),anyAuto=isTin||fs.some(x=>x.a&&!x.c);
+  let controls='';
+  if(isTin){
+    const parts=[...tp().tin.split('-'),br().code];
+    controls=`<div class="tin" role="group" aria-label="${esc(it.l)}">${fs.map((f,j)=>`${j?'<span class="d">-</span>':''}<input class="input auto" style="width:${j===3?76:58}px" value="${esc(parts[j]??'')}" readonly aria-label="TIN part ${j+1}">`).join('')}</div>`;
+  }else{
+    const radios=[],others=[];fs.forEach((f,j)=>(f.t==='radio'?radios:others).push([f,j]));
+    if(radios.length){const cur=FV[id+':r'];
+      controls+=`<div class="radios" role="radiogroup" aria-label="${esc(it.l)}">${radios.map(([f,j])=>`<label class="radio"><input type="radio" name="${id}" data-fid="${id}:r" value="${j}" ${String(cur)===String(j)?'checked':''}><span>${esc(f.l)}</span></label>`).join('')}</div>`}
+    controls+=others.map(([f,j])=>ctrl(f,`${id}:${j}`,it.l,fs.length>1)).join('');
+  }
+  return `<div class="item ${allCalc?'calc':''}">${no}<div style="min-width:0">
+    <div class="ilabel"><span class="tx">${esc(it.l)}${req?'<span class="req" title="Required">*</span>':''}</span>${anyAuto?`<span class="chip">${ic('user')}From tax profile</span>`:''}${allCalc?`<span class="chip">${ic('lock')}Computed</span>`:''}</div>
+    <div class="ctrls">${controls}</div></div></div>`;
+}
+const partName=(p,i)=>i===0&&/^Page \d+$/.test(p.n)?'Return details':p.n;
+function periodFor(f){return S.formPeriod||({Monthly:'October 2026',Quarterly:'Q3 2026',Annual:'TY 2026'}[f.freq]||'One-time return')}
+function formPage(f,ctx){
+  const t=tp(),b=br(),draft=f.q<0.8,base='fv:'+f.c,pid=i=>`fp-${ctx}-${f.c}-p${i}`;
+  const tpl=ctx==='app'&&S.formMode==='template';
+  return `<div class="ph"><div class="ph-text">
+      <div class="meta" style="margin:0 0 4px"><span class="code">BIR Form ${f.c}</span><span class="sep-dot"></span><span>Revision ${esc(f.rev)}</span></div>
+      <h1>${esc(f.t)}</h1>
+      <div class="fp-ctx"><span class="chip">${f.freq}</span><span class="chip">${f.pages} page${f.pages>1?'s':''}</span><span class="chip">${f.n} fields</span>${draft?`<span class="chip warning" title="Some fields are not yet placed under a numbered item">${ic('alert')}Draft layout</span>`:''}</div>
+    </div><div class="ph-actions"><button class="btn secondary sm" data-act="sheet:${f.c}" aria-pressed="${S.sheet&&S.sheet.code===f.c?'true':'false'}">${ic('file')}Print preview</button><button class="btn primary sm" data-act="toast:Draft saved.">Save draft</button></div></div>
+    <div class="fp-bar">${av(t.name,t.hue,20)}<b style="font-weight:600">${esc(t.name)}</b><span class="mono num">${t.tin}-${b.code}</span><span class="num">${esc(b.name)}</span><span class="sep-dot"></span><span class="num">For ${periodFor(f)}</span>${ctx==='showcase'?'<span class="chip">Sample taxpayer</span>':''}<span class="grow"></span><label class="inl">Guided mode<button class="switch" role="switch" aria-checked="${!!tplOf(t,f.c)}" data-act="toggle-sw" aria-label="Guided mode"></button></label></div>
+    ${tpl?`<div class="tbanner">${ic('template')}<p><b>Template mode.</b> Typing is off. Click a field to keep its value, mark it as a guided stop, or clear it.</p><button class="btn ghost sm" data-act="form:${f.c}">Done</button></div>`:''}
+    <div class="fp">
+      <nav class="fp-nav" aria-label="Parts of this form"><div class="navhead">On this form</div>${f.parts.map((p,i)=>`<button class="nav" data-act="jump:${pid(i)}"><span class="lbl">${esc(partName(p,i))}</span><span class="count">${p.items.length}</span></button>`).join('')}</nav>
+      <div style="min-width:0">${f.parts.map((p,i)=>`<details class="part" id="${pid(i)}" open><summary>${ic('chevRight','chev')}<span class="t">${esc(partName(p,i))}</span><span class="disc-meta">${p.items.length} item${p.items.length>1?'s':''}</span></summary><div class="part-body">${p.items.map((it,ix)=>itemHtml(it,`${base}:${i}`,ix)).join('')}</div></details>`).join('')}</div>
+    </div>`;
+}
+function formCards(list,act){
+  if(!list.length)return '<div class="empty">No form matches. Try a code like 1601C or a word like VAT.</div>';
+  return `<div class="fgrid">${list.map(f=>`<button class="fcard" data-act="${act}:${f.c}"><span class="top"><span class="fc">${f.c}</span><span style="flex:1"></span>${f.q<0.8?'<span class="chip warning">Draft layout</span>':''}</span><span class="ft">${esc(f.t)}</span><span class="chips"><span class="chip">${f.freq}</span><span class="chip">${f.pages}p</span><span class="chip">${f.n} fields</span></span><span class="bars" title="${f.parts.length} parts" aria-hidden="true">${f.parts.map(p=>`<i style="flex:${Math.max(1,p.items.length)}"></i>`).join('')}</span></button>`).join('')}</div>`;
+}
+function filtered(){const q=S.fsQ.trim().toLowerCase();return SCHEMA.filter(f=>(S.fsFreq==='All'||f.freq===S.fsFreq)&&(!q||(f.c+' '+f.t).toLowerCase().includes(q)))}
+function formTools(){return `<div class="fs-tools"><label class="searchbtn">${ic('search')}<input id="fs-q" value="${esc(S.fsQ)}" placeholder="Find a form, like 2550Q or VAT" autocomplete="off"></label><span class="seg">${FREQS.map(x=>`<button data-act="fs-freq:${x}" aria-pressed="${S.fsFreq===x}">${x}</button>`).join('')}</span><span class="num" id="fs-count">${filtered().length} of ${SCHEMA.length}</span></div>`}
+function eli5(){
+  const comb=Array.from({length:10},(_,i)=>`<rect x="${74+i*9.2}" y="88" width="8" height="10"/>`).join('');
+  const rows=[['6','TIN','auto'],['8','Name','auto'],['14','Tax due','₱'],['4','Amended?','Yes / No']].map(([n,l,k],i)=>{const y=8+i*35;return `<rect class="sv-surf sv-stroke" x="20" y="${y}" width="200" height="28" rx="6"/><rect class="sv-hover" x="28" y="${y+7}" width="26" height="14" rx="3"/><text class="sv-t" x="41" y="${y+17.5}" text-anchor="middle">${n}</text><text class="sv-l" x="62" y="${y+18}">${l}</text><rect class="sv-accs" x="160" y="${y+7}" width="52" height="14" rx="7"/><text class="sv-a" x="186" y="${y+17.5}" text-anchor="middle">${k}</text>`}).join('');
+  const bars=(x,y,w,n)=>Array.from({length:n},(_,i)=>`<rect class="sv-fill" x="${x}" y="${y+i*13}" width="${w*(i%2?0.6:1)}" height="7" rx="2"/>`).join('');
+  return `<div class="eli5">
+   <figure><svg viewBox="0 0 240 150" role="img" aria-label="A paper BIR form full of boxes"><rect class="sv-surf sv-stroke" x="66" y="6" width="108" height="138" rx="4"/><rect class="sv-fill" x="74" y="14" width="92" height="10" rx="2"/><g class="sv-line"><rect x="74" y="32" width="92" height="12"/><rect x="74" y="50" width="44" height="12"/><rect x="122" y="50" width="44" height="12"/><rect x="74" y="68" width="92" height="12"/>${comb}</g><rect class="sv-accs" x="74" y="106" width="92" height="14" rx="2"/><rect class="sv-line-acc" x="74" y="106" width="92" height="14" rx="2"/><text class="sv-t" x="79" y="116.5">14</text><rect class="sv-fill" x="74" y="128" width="60" height="7" rx="2"/></svg>
+     <figcaption><span class="stepn">1</span> The paper form<span>BIR's official sheet. We still use it for printing.</span></figcaption></figure>
+   <figure><svg viewBox="0 0 240 150" role="img" aria-label="Boxes listed as numbered fields">${rows}</svg>
+     <figcaption><span class="stepn">2</span> Boxes become fields<span>Each box keeps its number, its words and its kind.</span></figcaption></figure>
+   <figure><svg viewBox="0 0 240 150" role="img" aria-label="The same form on a computer and a phone"><rect class="sv-bg sv-stroke" x="10" y="12" width="156" height="102" rx="6"/><rect class="sv-hover" x="14" y="16" width="34" height="94" rx="3"/><rect class="sv-surf sv-stroke" x="54" y="20" width="106" height="88" rx="4"/>${bars(62,30,88,6)}<rect class="sv-fill" x="2" y="116" width="172" height="6" rx="3"/><rect class="sv-surf sv-stroke" x="182" y="28" width="48" height="98" rx="8"/>${bars(189,42,34,6)}<rect class="sv-prim" x="189" y="112" width="34" height="8" rx="3"/></svg>
+     <figcaption><span class="stepn">3</span> Our parts draw it<span>Same fields and colors as the app. Light or dark, wide or narrow.</span></figcaption></figure>
+  </div>
+  <div class="facts3"><div><b>${SCHEMA.length}</b>forms</div><div><b>${fieldTotal.toLocaleString('en-US')}</b>fields</div><div><b>1</b>page design</div></div>`;
+}
+function renderFS(){
+  const el=document.getElementById('fs-in');
+  if(S.fsForm&&SCH[S.fsForm]){el.innerHTML=`<button class="btn ghost sm fs-back" data-act="fs-back">${ic('arrowLeft')}All forms</button>`+formPage(SCH[S.fsForm],'showcase');return}
+  el.innerHTML=`<h1 style="font-size:28px;font-weight:600;letter-spacing:-.02em;margin:0;text-wrap:balance">All ${SCHEMA.length} BIR forms</h1>
+   <p class="lead" style="color:var(--fg-2);max-width:66ch;margin:8px 0 0">One page design draws every form. Pick one to fill it in.</p>${eli5()}${formTools()}<div id="fs-grid">${formCards(filtered(),'fs-open')}</div>`;
+}
+function renderFSGrid(){const g=document.getElementById('fs-grid');if(g){g.innerHTML=formCards(filtered(),S.mode==='forms'?'fs-open':'form');const c=document.getElementById('fs-count');if(c)c.textContent=`${filtered().length} of ${SCHEMA.length}`}}
+function viewLibrary(){return `<div class="ph"><div class="ph-text"><h1>Form library</h1><p class="lede">Every return eBIRForms can prepare. Open one to fill it in for ${esc(tp().name)}.</p></div></div>${formTools()}<div id="fs-grid">${formCards(filtered(),'form')}</div>`}
+/* Print preview: the official frozen BIR sheet beside the screen form.
+   Local copy (docs/ui-redesign/, file:// or localhost): load ../../html-frozen/ in a frame.
+   Shared link: the sheets are not bundled, so explain and link out. */
+const SHEET_LOCAL=location.protocol==='file:'||/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+const SHEET_BASE='../../html-frozen/';
+const SHEET_PAGES='https://hexuria.github.io/buwiz-forms/html-frozen/';
+let sheetRO=null;
+function sheetUrl(f,doc,base){return `${base}${f.s}/${doc==='guide'?'guide':'index'}.html`}
+function renderSheet(){
+  const root=document.getElementById('sheet-root');
+  if(sheetRO){sheetRO.disconnect();sheetRO=null}
+  if(!S.sheet){root.innerHTML='';return}
+  const f=SCH[S.sheet.code],doc=S.sheet.doc;
+  const local=sheetUrl(f,doc,SHEET_BASE),hosted=sheetUrl(f,doc,SHEET_PAGES);
+  const tabs=`<span class="seg"><button data-act="sheet-doc:index" aria-pressed="${doc==='index'}">Form</button><button data-act="sheet-doc:guide" aria-pressed="${doc==='guide'}" ${f.g?'':'disabled title="No guidelines page for this form"'}>Guidelines</button></span>`;
+  const body=SHEET_LOCAL
+    ?`<iframe class="sheet-frame" id="sheet-frame" title="Official BIR Form ${f.c} ${doc==='guide'?'guidelines':'sheet'}" src="${local}"></iframe>`
+    :`<div class="sheet-note"><h3>The official sheet isn't bundled with this link</h3>
+       <p>It lives in the repo at <span class="mono">html-frozen/${esc(f.s)}/</span>. Open the local copy of this prototype and Print preview shows the real ${f.c} sheet right here, next to the screen form.</p>
+       <code>open docs/ui-redesign/shell-prototype.html</code>
+       <p>Once GitHub Pages is on for hexuria/buwiz-forms, this button also opens the hosted sheet:</p>
+       <a class="btn secondary sm" style="align-self:flex-start" href="${hosted}" target="_blank" rel="noopener">${ic('arrowRight')}Open hosted ${f.c} sheet</a></div>`;
+  root.innerHTML=`<aside class="sheet" role="complementary" aria-label="Official BIR Form ${f.c}">
+    <div class="sheet-head"><div class="ttl"><b>BIR Form ${f.c} · official ${doc==='guide'?'guidelines':'sheet'}</b><span>What prints. Compare it with the screen form.</span></div>${tabs}
+      ${SHEET_LOCAL?`<a class="btn ghost sm" href="${local}" target="_blank" rel="noopener">Open in new tab</a>`:''}
+      <button class="ibtn" data-act="sheet-close" aria-label="Close print preview" title="Close (Esc)">${ic('x')}</button></div>
+    <div class="sheet-body" id="sheet-body">${body}</div></aside>`;
+  const fr=document.getElementById('sheet-frame'),bd=document.getElementById('sheet-body');
+  if(fr){
+    const fit=()=>{const w=bd.clientWidth-32,sc=Math.min(1,w/832);fr.style.transform=`scale(${sc})`;
+      let h=1400;try{h=fr.contentDocument.documentElement.scrollHeight||h}catch(e){h=doc==='guide'?6000:f.pages*1248+40}
+      fr.style.height=h+'px';fr.style.marginBottom=(h*sc-h)+'px'};
+    fr.addEventListener('load',fit);sheetRO=new ResizeObserver(fit);sheetRO.observe(bd);fit();
+  }
+}
+function viewForm(){const f=SCH[S.formCode];return f?formPage(f,'app'):'<div class="empty">This form is not in the library yet.</div>'}
+
+/* ---------- design system page ---------- */
+const TOKENS=[
+ ['--bg','Window ground, sidebars, right panel','#f4f4f6','#0e0e10'],
+ ['--surface','Main content, inputs, dialogs','#ffffff','#161619'],
+ ['--raised','Popovers, selected segment','#ffffff','#232328'],
+ ['--hover','Hover fill, chip and segment tracks','#ebebee','#1f1f23'],
+ ['--selected','Current nav row, pressed icon button','#e2e2e7','#29292f'],
+ ['--border','Hairlines, card and list borders','#e2e2e6','#25252a'],
+ ['--border-strong','Inputs, secondary buttons','#cdcdd3','#38383f'],
+ ['--fg','Primary text and icons','#18181b','#f3f3f5'],
+ ['--fg-2','Secondary text, resting icons','#54545d','#a7a7b1'],
+ ['--fg-3','Labels, hints, placeholders','#8a8a93','#73737d'],
+ ['--primary','Primary button (inverted ink)','#18181b','#f3f3f5'],
+ ['--accent','Focus, Draft status, unread dot, switch on','#2557d6','#7ea2ff'],
+ ['--success','Filed, Running','#157a3c','#5bd68a'],
+ ['--warning','Due within 14 days','#a5520a','#f3b44a'],
+ ['--danger','Overdue, destructive','#c0262d','#ff7b7b'],
+];
+function comp(title,demo,anatomy,rules,col){
+  return `<div class="comp"><div class="comp-demo ${col?'col':''}">${demo}</div><div class="comp-spec"><h3>${title}</h3>
+   <div><div class="k">Anatomy</div><ul>${anatomy.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+   <div><div class="k">Rules</div><ul>${rules.map(x=>`<li>${x}</li>`).join('')}</ul></div></div></div>`;
+}
+function renderDS(){
+  const el=document.getElementById('ds-in');
+  el.innerHTML=`
+  <h1>eBIRForms components</h1>
+  <p class="lead">One set of sizes, colors and parts for the desktop app. Every value below has a token. Agents porting a screen to GPUI use these numbers as written and never pick a new size by eye.</p>
+  <div class="rules">
+    <div class="rule"><b>16px icons, everywhere</b><span>Chrome, nav rows, buttons and fields all use 16px Lucide icons at stroke 1.75. Use 12px only inside chips and 14px only in the context pill and segments. Never 18, 20, 24 or 28.</span></div>
+    <div class="rule"><b>4px grid</b><span>Gaps and padding come from 4, 8, 12, 16, 20, 24, 32. Icon buttons in a row sit 4px apart.</span></div>
+    <div class="rule"><b>Two control heights</b><span>28px for chrome and dense rows (icon buttons, small buttons). 32px for inputs, nav rows and default buttons.</span></div>
+    <div class="rule"><b>No separators in chrome</b><span>Spacing groups the title bar. Hairlines appear only between list rows and disclosure sections.</span></div>
+    <div class="rule"><b>One accent</b><span>Blue marks focus and state, never decoration. The primary button is inverted ink, not blue.</span></div>
+    <div class="rule"><b>Panels toggle from their trigger</b><span>The right panel has no close button. The pill or bell that opened it closes it, and so does Esc.</span></div>
+  </div>
+
+  <h2>Color</h2><p class="note">Neutrals carry a faint cool bias. Every color is a token with a light and a dark value; components never use a literal color.</p>
+  <div class="swatches">${TOKENS.map(([v,u,l,d])=>`<div class="sw"><i style="background:var(${v})"></i><div><code>${v}</code><br>${u}<br><span class="mono">${l} · ${d}</span></div></div>`).join('')}</div>
+
+  <h2>Type</h2><p class="note">Native UI faces: Segoe UI Variable on Windows, SF Pro on macOS. TINs, branch codes and form codes use the UI face with tabular figures, never a monospace face.</p>
+  <div class="tbl-wrap"><table><tr><th>Token</th><th>Size / weight</th><th>Sample</th><th>Use</th></tr>
+   <tr><td><code>--fs-page</code></td><td>20 / 600</td><td style="font-size:20px;font-weight:600">Goldcoders Corp</td><td class="wrap">Page title, one per view</td></tr>
+   <tr><td><code>--fs-title</code></td><td>16 / 600</td><td style="font-size:16px;font-weight:600">Due in the next 30 days</td><td class="wrap">Section heading, dialog title, panel name</td></tr>
+   <tr><td><code>--fs-emph</code></td><td>14 / 600</td><td style="font-size:14px;font-weight:600">Notifications</td><td class="wrap">Panel header, palette input</td></tr>
+   <tr><td><code>--fs-body</code></td><td>13 / 400–500</td><td style="font-size:13px">Quarterly Value-Added Tax Return</td><td class="wrap">Body, buttons (500), nav rows (500), field values</td></tr>
+   <tr><td><code>--fs-meta</code></td><td>12 / 400–500</td><td style="font-size:12px;color:var(--fg-2)">Field label · Updated Sep 9</td><td class="wrap">Field labels, secondary lines, group labels</td></tr>
+   <tr><td><code>--fs-cap</code></td><td>11 / 500</td><td><span class="chip">Quarterly</span></td><td class="wrap">Chips, counts, keyboard hints</td></tr>
+   <tr><td><code>--font-num</code></td><td>12 / 600, tabular digits</td><td class="mono" style="font-weight:600">009-123-456-00000 · 2550Q</td><td class="wrap">TIN, branch code, form code. The UI face with equal-width digits, not monospace, so letters keep natural spacing.</td></tr>
+  </table></div>
+
+  <h2>Size, space and radius</h2>
+  <div class="tbl-wrap"><table><tr><th>Thing</th><th>Value</th><th>Notes</th></tr>
+   <tr><td>Title bar</td><td>40px</td><td class="wrap">Windows caption buttons 46×40. macOS traffic lights 12px, 8px apart.</td></tr>
+   <tr><td>Left sidebar</td><td>248px</td><td class="wrap">Padding 4 8 8. Hidden entirely when toggled; search and + move to the title bar.</td></tr>
+   <tr><td>Right panel</td><td>320px</td><td class="wrap">Tax profile or notifications, never both.</td></tr>
+   <tr><td>Main surface</td><td>radius 12, 8px inset</td><td class="wrap">Content column max 880px, padding 28 32.</td></tr>
+   <tr><td>Icon button</td><td>28×28</td><td class="wrap">Icon 16, radius 6.</td></tr>
+   <tr><td>Button</td><td>32 (md) · 28 (sm)</td><td class="wrap">Padding 12 / 10, gap 6, radius 6.</td></tr>
+   <tr><td>Nav row</td><td>32</td><td class="wrap">Padding 0 8, gap 10, radius 8.</td></tr>
+   <tr><td>Input</td><td>32</td><td class="wrap">Padding 0 10, radius 8, focus ring 3px accent-soft.</td></tr>
+   <tr><td>List row</td><td>min 52</td><td class="wrap">Padding 8 16, hairline between rows.</td></tr>
+   <tr><td>Radius</td><td>6 · 8 · 12 · 14 · full</td><td class="wrap">Controls · rows and inputs · cards and lists · dialogs · pills, chips, avatars.</td></tr>
+  </table></div>
+
+  <h2>Components</h2>
+  ${comp('Title bar',`<div class="anat"><div class="z"><span class="slot">${isMac()?'● ● ●':'—'}</span><span class="slot">${ic('panelLeft')}</span><span class="slot">${ic('arrowLeft')}</span><span class="slot">${ic('arrowRight')}</span><span class="slot cond">${ic('search')}</span><span class="slot cond">${ic('plus')}</span></div><div class="z"><span class="slot">context pill</span></div><div class="z r"><span class="slot">${ic('bell')}</span><span class="slot">${ic('sun')}</span><span class="slot">${isMac()?'':'— ☐ ✕'}</span></div></div>`,
+    ['Left: traffic lights (macOS), sidebar toggle, back, forward','Blue dotted slots appear only while the sidebar is hidden','Center: context pill','Right: notifications, theme, Windows caption buttons'],
+    ['4px between icon buttons, no separators','Window title text is gone. The pill names the context.','Empty space is the drag region','Back and forward hide below 600px'],true)}
+  ${comp('Icon button',`<button class="ibtn" aria-label="Search">${ic('search')}</button><button class="ibtn" aria-label="Notifications" aria-pressed="true">${ic('bell')}</button><button class="ibtn" aria-label="Back" disabled>${ic('arrowLeft')}</button><span class="chip">rest · pressed · disabled</span>`,
+    ['28×28 hit area, radius 6','16px icon, color fg-2','Optional 6px unread dot, top right'],
+    ['Hover fills hover and turns the icon fg','Pressed (panel open) fills selected','Always has a tooltip and aria-label']) }
+  ${comp('Button',`<button class="btn primary">${ic('plus')}New return</button><button class="btn secondary">${ic('copy')}Copy TIN</button><button class="btn ghost">Cancel</button><button class="btn danger">Delete draft</button><button class="btn secondary sm">Small</button>`,
+    ['32px tall (sm 28), padding 12 (sm 10)','Label 13/500, optional leading 16px icon, gap 6','Radius 6'],
+    ['One primary per view','Secondary for row actions, ghost inside toolbars and panels','Danger is tinted, never solid red','Label says what happens: “Open form”, not “OK”'])}
+  ${comp('Nav row',`<div style="width:240px;display:flex;flex-direction:column;gap:2px"><button class="nav" aria-current="page">${ic('home')}<span class="lbl">Home</span></button><button class="nav">${ic('file')}<span class="lbl">Forms</span><span class="count">7</span></button><button class="nav">${ic('settings')}<span class="lbl">Settings</span></button></div>`,
+    ['32px tall, padding 0 8, gap 10, radius 8','16px icon + 13/500 label + optional count (12, fg-3)'],
+    ['Resting text fg-2, current row fills selected','2px gap between rows','Labels truncate with an ellipsis, never wrap'])}
+  ${comp('Context pill',`<button class="pill" style="max-width:none">${av('Goldcoders Corp',222,20)}<span class="nm">Goldcoders Corp</span><span class="tin mono">009-123-456-00000</span>${ic('chevDown')}</button>`,
+    ['30px tall, full radius, 1px border','20px avatar, name 13/600, TIN mono 12, 14px chevron'],
+    ['Clicking it toggles the tax-profile panel','Shows the full TIN with the branch code','Below 600px it collapses to avatar and branch code'])}
+  ${comp('Avatar',`${av('Goldcoders Corp',222,20)}${av('Goldcoders Corp',222,28)}${av('Maria Santos Dela Cruz',340,40)}${av('Sari-Sari ni Aling Nena',150,56)}`,
+    ['Sizes 20 · 28 · 40 · 56','Initials: first and last capitalised word (Goldcoders Corp → GC)'],
+    ['Hue comes from the taxpayer, so it stays the same everywhere','Tinted fill, not saturated','20 in rows and the pill, 40 in page headers, 56 in the panel'])}
+  ${comp('Disclosure (replaces the old collapsible)',`<div class="disc-group" style="width:100%">${(()=>{const o={...S.open},e=S.editSec;S.open={a:true,b:false};S.editSec=null;
+      const h=`<div class="disc open"><div class="disc-head"><button class="disc-toggle">${ic('chevRight','chev')}<span>Address and contact</span><span class="disc-meta">2 of 4 from head office</span></button><button class="btn ghost sm">${ic('pencil')}Edit</button></div><div class="disc-body"><dl class="fields"><div class="field"><dt><span>ZIP code</span></dt><dd class="mono">6000</dd></div><div class="field inh"><dt><span>Phone</span><span class="grow"></span><span class="chip">${ic('branch')}Head office</span></dt><dd>(02) 8812 4400</dd></div></dl></div></div><div class="disc"><div class="disc-head"><button class="disc-toggle">${ic('chevRight','chev')}<span>Email, security and export</span><span class="disc-meta">Set once for the taxpayer</span></button></div></div>`;
+      S.open=o;S.editSec=e;return h})()}</div>`,
+    ['Sections share one bordered group (radius 12) split by hairlines','Header 44px: 16px chevron that rotates 90°, title 13/600, meta 12 fg-3, trailing ghost Edit','Body padding 4 20 20 36, aligned with the title text'],
+    ['No card, shadow or colored band per section','Edit sits in the header only while the section is open','Edit mode swaps values for inputs in place, with Cancel and Save at the bottom right'],true)}
+  ${comp('Field',`<dl class="fields" style="width:100%"><div class="field"><dt><span>Registered name</span></dt><dd>Goldcoders Corp</dd></div><div class="field"><dt><span>Email</span><span class="grow"></span><span class="inh-ctl">Same as head office<button class="switch" role="switch" aria-checked="true" data-act="toggle-sw" aria-label="Same as head office"></button></span></dt><dd><input class="input" value="tax@goldcoders.ph" disabled></dd></div><div class="field"><dt><span>Branch code</span></dt><dd><input class="input mono err" value="0001"><div class="errtxt">Branch code is 5 digits, like 00001.</div></dd></div></dl>`,
+    ['Label 12 fg-2 above value 13 fg','Two-column grid, gaps 16 × 32; one column below 640px','Input 32px, radius 8'],
+    ['Inherited values read fg-2 with a “Head office” chip','In edit mode the chip becomes a “Same as head office” switch','Errors say what to type, under the input'],true)}
+  ${comp('Tabs, segmented control, switch, checkbox',`<div class="tabs" style="margin:0;width:100%"><button class="tab" aria-selected="true">Profile</button><button class="tab" aria-selected="false">Forms<span class="count">7</span></button><button class="tab" aria-selected="false">Templates<span class="count">2</span></button></div><span class="seg"><button aria-pressed="false">2025</button><button aria-pressed="true">2026</button><button aria-pressed="false">2027</button></span><button class="switch" role="switch" aria-checked="true" data-act="toggle-sw" aria-label="Example switch"></button><button class="check" role="checkbox" aria-checked="true" aria-label="Example checkbox">${ic('check')}</button>`,
+    ['Tabs: 36px, 13/500, 2px fg underline, count chip','Segmented: 2px track padding, 24px segments, 12/500','Switch 32×18, knob 14 · Checkbox 16, radius 4'],
+    ['Tabs switch views of one object (a taxpayer)','Segmented picks one of 2–4 short values (year, theme)','Switch applies at once; checkbox is part of a list or form'],true)}
+  ${comp('Status chip',`${statusChip('Not started')}${statusChip('Draft')}${statusChip('Filed')}<span class="chip warning">In 11 days</span><span class="chip danger">Overdue</span><span class="chip">${ic('branch')}Head office</span>`,
+    ['20px, full radius, 11/500','Tinted fill of the semantic color, optional 12px icon'],
+    ['Draft = accent, Filed = success, due within 14 days = warning, overdue = danger','Not started and neutral facts use the plain chip','Never use a chip as a button'])}
+  ${comp('Side panel',`<div style="width:300px;border:1px solid var(--border);border-radius:12px;background:var(--bg);overflow:hidden"><div class="rp-head"><h2>Notifications</h2><button class="btn ghost sm">Mark all read</button></div><div style="padding:0 12px 12px"><div class="notif"><span class="ico warning">${ic('alert')}</span><div class="tx"><b>2550Q is due in 11 days</b><span>Goldcoders Corp</span></div><div class="when">2h<span class="udot"></span></div></div></div></div>`,
+    ['320px, on the window ground (no card)','Header 40px: title 14/600 and at most one ghost action'],
+    ['No close button and no separator line','Opening one panel replaces the other','Tax-profile panel: avatar 56, name, TIN, facts, then Open / Branches / Switch taxpayer'])}
+  `;
+}
+
+/* ---------- boot ---------- */
+hydrate(document);
+try{const p=localStorage.getItem('ebir-proto-platform');if(p==='mac'||p==='win')S.platform=p}catch(e){}
+if(matchMedia('(max-width:860px)').matches)S.sidebar=false;
+render();
+</script>
