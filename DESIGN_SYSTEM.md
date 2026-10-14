@@ -1,7 +1,7 @@
 # eBIRForms desktop design system (shell redesign, 2026-10-14)
 
-Read this before you build or restyle any desktop screen in
-`crates/bir-desktop`. The interactive prototype at
+Read this before you build or restyle any desktop screen in buwiz-forms,
+whether in gpui-shell (`app/`) or the painted UI (`crates/bir-desktop`). The interactive prototype at
 `docs/ui-redesign/shell-prototype.html` (published copy:
 https://claude.ai/artifact/UdGGALWrSBg2ipnYZS9VfW) shows the visual source of
 truth. Its **Components** tab renders every part listed here, in light and
@@ -115,8 +115,9 @@ only for shell commands and code.
 
 ## Wrapper components (build these first)
 
-Put them in `crates/bir-desktop/src/components/ui/` and export them from
-`components/mod.rs`. Every screen uses these. Calling raw `Button` sizing or
+In gpui-shell, put them in one shared module under `app/shell/`. In the
+painted UI, put them in `crates/bir-desktop/src/components/ui/` and export
+them from `components/mod.rs`. Every screen uses these. Calling raw `Button` sizing or
 `Icon::size` from a screen is a review finding.
 
 | Wrapper | Builds on | Fixed values |
@@ -160,17 +161,21 @@ spec requires for new controls.
   separators.
 - **Title bar, center:** the context pill (taxpayer avatar, name, full TIN
   with branch code). It replaces the window title. Clicking it toggles the
-  tax-profile panel. The old "eBIRForms" sidebar title and the chevron-left
+  tax-profile panel. Its 14 px chevron points right (`ChevronRight`) while
+  the panel is closed and left (`ChevronLeft`) while it is open, toward
+  where the panel is. With no taxpayer yet, the pill reads "Add a
+  taxpayer". The old "eBIRForms" sidebar title and the chevron-left
   collapse button are removed.
 - **Title bar, right side:** notifications (with a 6 px accent dot when
   something is unread), the theme toggle, and on Windows the caption
   buttons. The close button hovers to `#c42b1c` (the system value; this is
   the only allowed literal color).
 - **Left sidebar:** a search field and a `+` (new return) at the top, then
-  Home, Calendar, Filings and a "Recent" list. At the bottom are Settings
+  Home, Form library, Calendar, Filings and a "Recent" list. At the bottom are Settings
   and the app account row (avatar, name, email, up-down chevron). The
   account row opens a menu with Lock app, Account settings and Log out. The
-  app account is separate from tax profiles. The Taxpayers list is removed
+  menu paints above everything in the sidebar footer, Settings included.
+  The app account is separate from tax profiles. The Taxpayers list is removed
   from the sidebar and lives in the tax-profile panel.
 - **Right panel, tax profile:** avatar 56, name, TIN, and a pencil button
   that edits name, branch code and location in place (branch code must be 5
@@ -184,6 +189,11 @@ spec requires for new controls.
   · type, with Copy TIN and New return buttons) and tabs for Profile,
   Forms and Templates. These are the tax-profile spec's Details, Forms and
   Templates tabs.
+- **Scrolling:** the main area and each side panel scroll vertically only.
+  Nothing in the shell scrolls sideways under a trackpad swipe; the only
+  sideways scroller is a schedule table that is wider than its box.
+- **Toasts** sit bottom-centre, 20 px above the window edge, on `primary`,
+  and go away after about 2.6 s.
 - **Below 860 px** the sidebar and the panel become overlays. **Below
   600 px** the pill shows only the avatar and branch code, and back and
   forward are hidden.
@@ -209,6 +219,97 @@ spec requires for new controls.
   contact (inheritable), and Email, security and export (D12, set once per
   taxpayer).
 
+## Empty state (fresh install)
+
+- **Home:** "Welcome to eBIRForms", a lede, then one bordered group with
+  three numbered steps (28 px circle, 16 px icon, title 13/500, line 12
+  fg-3): Add a taxpayer (TIN, registered name and head-office address), Add
+  a tax year (any year up to next year, per branch), Choose its forms (all
+  43 BIR forms, or start from a pack). A primary "Add your first taxpayer"
+  ends the group and opens the New taxpayer page.
+- **Pill:** "Add a taxpayer". **Tax-profile panel:** "No taxpayer yet", one
+  line saying what the panel is for, and a "New taxpayer" button.
+- New return with no taxpayer says "Add a taxpayer first, then open a form
+  for them." instead of opening a form.
+
+## Tax profile: tax years, forms, TIN and templates
+
+These extend the Profile, Forms and Templates tabs under **Main area for a
+taxpayer**. They were built and tested in hexuria/ebirforms PR #8
+(`apps/desktop/src/app.tsx`, `packages/core/src/store.ts`).
+
+### Tax years
+
+- A tax year belongs to a **branch**. The Forms tab's segmented control lists
+  only the years that branch has, oldest first.
+- **Add year** (ghost button, `+` icon, beside the segmented control) opens
+  an inline band on `accent-soft` (radius 12, padding 12 × 16): "Add tax
+  year", a dropdown of the years it may add, a "Copy N forms from YYYY"
+  checkbox (on by default, shown when the branch has an earlier year),
+  Cancel, and a primary "Add YYYY".
+- **Allowed years:** from 2010 up to **one year after the current year**
+  (in 2026 that is 2027; 2028 is refused), minus years the branch already
+  has. The data layer enforces the same upper bound, so a year typed past
+  the UI is refused too, with "Choose a tax year from 2010 to 2027."
+- Copying carries the forms list of the branch's latest year. Templates
+  belong to the branch, not the year, so they carry over by themselves.
+  Amounts never copy. Toast: "2027 added with 5 forms from 2026."
+- A branch with no year shows "<Branch> has no tax year yet. Add one to
+  choose the forms it files." and the band open.
+- This replaces the fixed 2025 / 2026 / 2027 control and the "Copy 2026
+  forms to 2027?" banner. The banner's question (D9) is now the checkbox.
+
+### Forms tab: read mode and edit mode
+
+- **Read mode** (default) lists only the forms filed in the selected year:
+  form code, title, "Next: <period>" or "Every period filed", a frequency
+  chip, "Due <date>", and a Template / No template chip. No checkboxes and
+  no starter packs. With none: "No forms for 2026 yet." and a "Choose forms"
+  button that enters edit mode.
+- **Edit forms** (secondary, pencil icon, right end of the toolbar) enters
+  edit mode. The toolbar's right end becomes "N selected", Cancel (ghost)
+  and "Save forms" (primary).
+- **Edit mode** shows a search field (280 wide, "Find a form, like 1601C or
+  VAT"), a segmented frequency filter (All, Monthly, Quarterly, Annual, As
+  needed), the **starter packs** row, then all 43 forms with a checkbox each.
+  Rows that are off are dimmed and say "Not filed this year".
+- **Starter packs appear only in edit mode.** A pack adds its forms to the
+  selection ("VAT business forms selected. Save to keep them."); it never
+  removes any.
+- Changes are **staged**: nothing is written until "Save forms". Cancel or
+  switching year drops them. Save toast: "2026 forms updated: 2 added, 1
+  removed."
+
+### Editing the TIN
+
+- The Taxpayer section's Edit makes the **9-digit TIN** editable (mono,
+  digits and dashes, shown as 000-000-000). The taxpayer TIN never shows a
+  branch suffix; the branch code lives on the Branch section and in the pill.
+- Under the fields: "Changing the TIN moves every branch, tax year, return
+  and template to the new number."
+- Saving a new TIN moves the taxpayer and everything under it in **one
+  transaction**; a TIN another taxpayer already uses is refused with a toast
+  naming it. Saving with the TIN unchanged only updates the other fields.
+
+### Templates
+
+- One template per form per branch (D7). The Templates tab lists the forms
+  the selected year files: code, title, "Updated <date>" or "No template
+  yet", "N answers kept", and actions: **Create** (secondary, `+`) when there
+  is none, **Update** and **Delete** (ghost) when there is one.
+- Create and Update snapshot the **newest return** of that form for the
+  branch, any year and status, and keep only setup answers: amounts,
+  percentages and computed fields are dropped (D8). With no return yet the
+  toast says "Open and save a 1601C return first. The template keeps its
+  setup answers."
+- "Use as template" on a filed return (Home's Recently filed, Filings) does
+  the same from that return (D17).
+- A new return starts from the branch template; saved values and the
+  profile prefill go on top.
+- Not built yet, still per the tax-profile spec: template mode
+  (click-to-cycle keep / mark / off), guided mode stopping at marked fields,
+  and the "Update template?" prompt on save (D10).
+
 ## Form page (the on-screen return, all 43 forms)
 
 The screen form and the printed form are two different things. The
@@ -225,7 +326,10 @@ so every form gets the same parts, themes and responsive behaviour.
     Part and Schedule headings;
   - `crates/bir-core/src/forms/registry.rs` for titles and filing frequency.
 
-  It writes nothing into the repo tree.
+  It writes nothing into the repo tree. Every field carries `k`, its
+  `field_key` in the rules corpus, and every schedule table carries `keys`
+  (one key per cell, by row). Bind controls and validation messages to data
+  by `k`; never by label or position.
 - **Layout:** the page header shows the BIR form code and revision, the
   title, and chips for frequency, page count and field count. A context bar
   shows the taxpayer, TIN and branch, the period, and a Guided mode switch.
@@ -243,6 +347,17 @@ so every form gets the same parts, themes and responsive behaviour.
   - TIN: four locked mono boxes (3-3-3-5).
   - Repeated schedule rows: one table with a row-number column, scrolling
     sideways inside its own box.
+- **Validation messages** sit in a reserved 18 px line under each item
+  (12 px, `danger`, one line, ellipsis), present whether or not there is an
+  error, so nothing moves when messages appear or clear. There is no error
+  banner. A message binds to its item by field id, then by the item number
+  in the message ("Item 06" matches item 6: leading zeros are ignored),
+  then by label words; one that matches nothing goes on the first item.
+- **Never block the UI on form work.** Opening a form and validating it run
+  off the UI thread (the official runtime took 3 s to open 1601C and up to
+  20 s for 2550Q's first validation). Edits show at once; validation runs
+  300 ms after the last edit, with a "Checking…" chip in the context bar
+  while it runs.
 - **Identity fields** (TIN, RDO, name, address, ZIP, phone, email) are locked
   and filled from the tax profile, with a "From tax profile" chip (D18).
   Computed fields are locked.

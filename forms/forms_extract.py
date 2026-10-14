@@ -250,7 +250,7 @@ for b in inv["bundles"]:
                 ri += 1
             else:
                 fl = human_key(f["field_key"])
-            o = {"l": fl[:120], "t": k}
+            o = {"l": fl[:120], "t": k, "k": f["field_key"]}
             req = f["required"]
             if req == "required":
                 o["r"] = 1
@@ -334,7 +334,8 @@ for b in inv["bundles"]:
                     lbl = re.sub(r"(?i)\s*row\s*\d+.*$", "", lbl).strip() or base or "Schedule rows"
                 out.append({"no": "" if re.search(r"(?i)row", first["no"]) else first["no"], "l": lbl, "p": first["p"],
                             "cols": [{"l": colname(x["l"], base), "t": x["t"], **({"c": 1} if x.get("c") else {})} for x in first["f"]],
-                            "rows": len(run)})
+                            "rows": len(run),
+                            "keys": [[x.get("k") for x in it["f"]] for it in run]})
                 i = j
             else:
                 out.append(items[i])

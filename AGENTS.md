@@ -1,9 +1,24 @@
 # AGENTS.md — buwiz UI redesign
 
 This repo is the **design reference** for the eBIRForms desktop app redesign.
-The product code lives in [hexuria/buwiz-forms](https://github.com/hexuria/buwiz-forms)
-(`crates/bir-desktop`, Rust + GPUI). Nothing here ships; everything here is the
-spec that product code must match.
+The product code lives in [hexuria/buwiz-forms](https://github.com/hexuria/buwiz-forms).
+Nothing here ships; everything here is the spec that product code must match.
+
+The UI there is moving to **gpui-shell**: JavaScript views in `app/`
+(`app/main.js`, `app/shell/*.js`) on a thin Rust host, `crates/bir-shell`,
+which exposes bir-core through the `bir` host module. Its plan and cutover gate
+are in buwiz-forms `docs/plans/gpui-shell-migration.md` (issue #135). The
+painted Rust UI in `crates/bir-desktop` stays the reference until that gate
+passes. Build new screens in whichever layer the request names; the design is
+the same in both.
+
+[hexuria/ebirforms PR #8](https://github.com/hexuria/ebirforms/pull/8) built
+this design end to end in another GPUI binding (gpuix, React): the shell, all
+43 form pages, and the tax-profile flows in `DESIGN_SYSTEM.md` (tax years,
+the Forms edit mode, TIN editing, templates, empty state). Read it for
+behaviour and data rules (`apps/desktop/src/app.tsx`,
+`packages/core/src/store.ts`). Leave its gpuix workarounds behind; the
+lessons section below says which those are.
 
 Sources of truth, one meaning each:
 
@@ -11,7 +26,8 @@ Sources of truth, one meaning each:
   in full before any UI work, whatever the task.
 - `prototype/shell-prototype.html`: what the result looks and behaves like.
   It has three tabs: App, Components, Forms.
-- `forms/forms-schema.json`: the shape of every on-screen form (43 forms).
+- `forms/forms-schema.json`: the shape of every on-screen form (43 forms),
+  with each field's rules-corpus key in `k`.
 
 Pick the task below that matches the request, follow its steps in order, and
 stop only when its **Done** line holds.
@@ -23,10 +39,11 @@ stop only when its **Done** line holds.
 2. Open the prototype. Find the screen you are building in the App tab, and
    its parts in the Components tab. Note every size, spacing, state and
    theme value you see there. Each one has a token in `DESIGN_SYSTEM.md`.
-3. Make sure the wrapper components from `DESIGN_SYSTEM.md` exist in
-   `crates/bir-desktop/src/components/ui/` (IconButton, AppButton, NavRow,
-   ContextPill, Avatar, Disclosure, Field, StatusChip, SidePanel,
-   Segmented), and build any missing ones first. Screens call the wrappers.
+3. Make sure the wrapper components from `DESIGN_SYSTEM.md` exist
+   (IconButton, AppButton, NavRow, ContextPill, Avatar, Disclosure, Field,
+   StatusChip, SidePanel, Segmented), and build any missing ones first: in
+   gpui-shell as one shared module under `app/shell/`, in the painted UI in
+   `crates/bir-desktop/src/components/ui/`. Screens call the wrappers.
    Sizes and colors come from the wrappers and tokens.
 4. Port one screen at a time with the porting checklist at the end of
    `DESIGN_SYSTEM.md`.
@@ -35,9 +52,15 @@ stop only when its **Done** line holds.
    `html-frozen/` sheets in buwiz-forms are the print output; they stay
    exactly as they are.
 
+6. For the tax-profile screens, follow "Empty state" and "Tax profile: tax
+   years, forms, TIN and templates" in `DESIGN_SYSTEM.md`. The year bound
+   (2010 to next year) and the one-transaction TIN move belong in bir-core,
+   not only in the view, so no other caller can get past them.
+
 **Done:** every checklist item holds for the screen, in light and dark, on
 Windows and macOS, at full width and at 800 px. Every new control has a
-stable gpui-agent id.
+stable gpui-agent id. For a scrolling screen, a sideways trackpad swipe
+moves nothing sideways.
 
 ## Task: change the prototype
 
@@ -86,7 +109,39 @@ Screens" canvas: `canvas.json` (layout) and one `.dc.html` per screen. It runs
 inside the claude.ai Design canvas, not as a plain page. Read the `.dc.html`
 markup as the exact layout and copy spec for the tax-profile screens:
 Profile, branch editing with "Same as head office", Forms, Templates, and dark
-mode.
+mode. The canvas predates tax years per branch and the Forms edit mode: its
+Forms screen shows the old fixed year control and an always-on checklist.
+Where it and `DESIGN_SYSTEM.md` differ, `DESIGN_SYSTEM.md` and the prototype
+win.
+
+## Lessons from the ebirforms build (2026-10-15)
+
+Measured in hexuria/ebirforms PR #8. gpuix lays out with Taffy, as GPUI does,
+so the layout lessons carry over; the last group does not.
+
+- **Scroll one axis.** Give pages and side panels vertical-only scrolling
+  (`overflow_y_scroll()` in gpui-shell, never `overflow_scroll()`). Both-axis
+  scrollers let every page drift sideways under a trackpad. With y only, GPUI
+  turns a perfectly sideways wheel event into a vertical scroll; that is
+  expected.
+- **Give the content column a definite width.** An auto-width column
+  stretched by a flex-grow parent, and flex-grown text cells in a field grid,
+  made the layout engine re-measure every text on every frame: Profile
+  frames went from about 230 ms to 6 ms once the column and grid cells got
+  pixel widths computed from the window size. Centre the column with computed
+  side padding.
+- **Keep reads out of render.** Synchronous database reads on every render
+  cost more than the drawing. Cache them, invalidated by a data version that
+  every write bumps. Click to page change was about 65 ms after that.
+- **Never block the UI on form work.** Opening a form and its first
+  validation took 3 s (1601C) to 20 s (2550Q) and froze the window. Run them
+  in the background (`cx.spawn`, or the `bir` host module's async functions)
+  and apply edits optimistically; see "Form page" in `DESIGN_SYSTEM.md`.
+- **Use a virtual list** for long lists (the 43-form library, Filings).
+- **gpuix-only, leave behind:** the `once()` click de-duplicator (gpuix
+  delivered each click twice), the custom Dropdown (gpuix's select showed
+  the raw value), the single-scroller page (gpuix has no nested scrolling;
+  GPUI does), and the `fontVariantNumeric` removal.
 
 ## Facts that are easy to lose
 

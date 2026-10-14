@@ -147,6 +147,7 @@ svg.i{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.75;str
 .pill .tin{font-size:var(--fs-meta);color:var(--fg-2);white-space:nowrap}
 .pill .bc{display:none;font-size:var(--fs-meta);color:var(--fg-2)}
 .pill svg.i{width:14px;height:14px;color:var(--fg-3)}
+.pill.add{padding-left:10px}
 
 .body{display:flex;min-height:0}
 .sidebar{width:248px;flex-shrink:0;display:flex;flex-direction:column;padding:4px 8px 8px;min-height:0}
@@ -156,7 +157,7 @@ svg.i{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.75;str
 .searchbtn:hover{border-color:var(--border-strong);color:var(--fg-2)}
 .searchbtn .lbl{flex:1;text-align:left}
 kbd{font:500 var(--fs-cap) var(--font-ui);color:var(--fg-3);border:1px solid var(--border);border-radius:4px;padding:0 4px;height:18px;display:inline-flex;align-items:center}
-.sb-scroll{flex:1;overflow:auto;min-height:0;display:flex;flex-direction:column;gap:2px;padding-top:12px}
+.sb-scroll{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;display:flex;flex-direction:column;gap:2px;padding-top:12px}
 .sb-foot{display:flex;flex-direction:column;gap:2px;padding-top:8px;position:relative}
 .account{display:flex;align-items:center;gap:10px;width:100%;padding:6px 8px;border:0;border-radius:var(--r-row);background:transparent;cursor:pointer;text-align:left}
 .account:hover,.account[aria-expanded="true"]{background:var(--hover)}
@@ -170,13 +171,13 @@ kbd{font:500 var(--fs-cap) var(--font-ui);color:var(--fg-3);border:1px solid var
 .main{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);margin:0 8px 8px 0;overflow:hidden;container-type:inline-size}
 .window.sb-hidden .main{margin-left:8px}
 .window.panel-open .main{margin-right:0}
-.main-scroll{flex:1;overflow:auto}
+.main-scroll{flex:1;overflow-y:auto;overflow-x:hidden}
 .content{max-width:880px;margin:0 auto;padding:28px 32px 56px}
 .rpanel{display:none;width:320px;flex-shrink:0;flex-direction:column;min-height:0}
 .window.panel-open .rpanel{display:flex}
 .rp-head{display:flex;align-items:center;gap:8px;height:40px;padding:0 12px 0 20px;flex-shrink:0}
 .rp-head h2{flex:1;margin:0;font-size:var(--fs-emph);font-weight:600}
-.rp-scroll{flex:1;overflow:auto;padding:0 12px 12px 12px}
+.rp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 12px 12px 12px}
 
 /* page */
 .ph{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
@@ -186,7 +187,7 @@ kbd{font:500 var(--fs-cap) var(--font-ui);color:var(--fg-3);border:1px solid var
 .sep-dot{width:3px;height:3px;border-radius:50%;background:var(--fg-3)}
 .ph-actions{display:flex;gap:8px}
 .lede{color:var(--fg-2);margin:6px 0 0;max-width:62ch}
-.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin:20px 0 24px;overflow-x:auto}
+.tabs{display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid var(--border);margin:20px 0 24px}
 .tab{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 10px;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;background:none;color:var(--fg-2);font-weight:500;cursor:pointer;white-space:nowrap}
 .tab:hover{color:var(--fg)}
 .tab[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--fg)}
@@ -230,13 +231,20 @@ h2.sec:first-child{margin-top:0}
 .num{font-size:var(--fs-meta);color:var(--fg-2);font-variant-numeric:tabular-nums;white-space:nowrap}
 .r-forms{grid-template-columns:16px 68px minmax(0,1fr) 84px 104px 112px}
 .r-due{grid-template-columns:44px 68px minmax(0,1fr) 88px 96px}
-.r-tpl{grid-template-columns:68px minmax(0,1fr) 140px 96px}
+.r-forms.read{grid-template-columns:68px minmax(0,1fr) 84px 104px 112px}
+.r-tpl{grid-template-columns:68px minmax(0,1fr) 128px 172px}
+.r-step{grid-template-columns:28px 16px minmax(0,1fr)}
+.stepc{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--hover);color:var(--fg-2);font-size:var(--fs-meta);font-weight:600;font-variant-numeric:tabular-nums}
+.r-step>svg.i{color:var(--fg-2)}
 .r-filed{grid-template-columns:68px minmax(0,1fr) 104px 132px}
 .datebox{width:44px;text-align:center;line-height:1.1}
 .datebox small{display:block;font-size:var(--fs-cap);font-weight:600;color:var(--fg-3);letter-spacing:.06em}
 .datebox b{font-size:var(--fs-title);font-weight:600;font-variant-numeric:tabular-nums}
 .toolbar{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;margin-bottom:16px}
 .toolbar .grow{flex:1}
+.toolbar .searchbtn{flex:0 1 280px;cursor:text}
+.toolbar .searchbtn input{flex:1;border:0;background:transparent;color:var(--fg);font:var(--fs-body) var(--font-ui);outline:none;min-width:0}
+.helptxt{font-size:var(--fs-meta);color:var(--fg-3);margin:16px 0 0}
 .packs{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .packs .lbl{font-size:var(--fs-meta);color:var(--fg-3);margin-right:2px}
 .banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border-radius:var(--r-card);background:var(--accent-soft);margin-bottom:16px}
@@ -276,7 +284,7 @@ h2.sec:first-child{margin-top:0}
 .dlg-head{padding:16px 20px 4px}
 .dlg-head h2{margin:0;font-size:var(--fs-title);font-weight:600}
 .dlg-head p{margin:2px 0 0;color:var(--fg-2);font-size:var(--fs-meta)}
-.dlg-body{padding:12px 12px;overflow:auto}
+.dlg-body{padding:12px 12px;overflow-y:auto;overflow-x:hidden}
 .dlg-foot{display:flex;gap:8px;justify-content:flex-end;padding:12px 20px 16px;border-top:1px solid var(--border)}
 .pal-input{display:flex;align-items:center;gap:10px;padding:0 16px;height:48px;border-bottom:1px solid var(--border);color:var(--fg-3)}
 .pal-input input{flex:1;border:0;background:transparent;font:var(--fs-emph) var(--font-ui);color:var(--fg);outline:none;min-width:0}
@@ -292,7 +300,7 @@ h2.sec:first-child{margin-top:0}
 .toast svg.i{flex-shrink:0}
 
 /* design-system page */
-.ds{flex:1;min-height:0;overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+.ds{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;background:var(--surface);border:1px solid var(--border);border-radius:10px}
 .ds-in{max-width:980px;margin:0 auto;padding:32px 32px 64px}
 .ds h1{font-size:28px;font-weight:600;letter-spacing:-.02em;margin:0;text-wrap:balance}
 .ds h2{font-size:var(--fs-page);font-weight:600;margin:48px 0 6px;letter-spacing:-.01em}
@@ -348,7 +356,8 @@ td.wrap{white-space:normal;min-width:200px;color:var(--fg-2)}
 .part>summary .t{flex:1;min-width:0}
 .part>summary .disc-meta{flex-shrink:0}
 .part-body{border-top:1px solid var(--border)}
-.item{display:grid;grid-template-columns:44px minmax(0,1fr);gap:4px 12px;padding:14px 20px 16px 12px}
+.item{display:grid;grid-template-columns:44px minmax(0,1fr);gap:4px 12px;padding:14px 20px 8px 12px}
+.vmsg{height:18px;line-height:18px;margin-top:4px;font-size:var(--fs-meta);color:var(--danger);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .item+.item{border-top:1px solid var(--border)}
 .item.calc{background:var(--bg)}
 .ino{font:600 var(--fs-meta) var(--font-num);font-variant-numeric:tabular-nums;color:var(--fg-2);background:var(--hover);border-radius:var(--r-ctl);height:22px;min-width:30px;display:inline-grid;place-items:center;padding:0 6px;justify-self:start;margin-top:1px}
@@ -437,17 +446,18 @@ td.wrap{white-space:normal;min-width:200px;color:var(--fg-2)}
 .fs-back{margin-bottom:16px}
 @container (max-width:760px){
   .fp{grid-template-columns:minmax(0,1fr);gap:16px}
-  .fp-nav{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:4px}
+  .fp-nav{position:static;flex-direction:row;flex-wrap:wrap;gap:4px;padding-bottom:4px}
   .fp-nav .navhead{display:none}
   .fp-nav .nav{flex:0 0 auto;width:auto;border:1px solid var(--border);border-radius:999px;min-height:28px;padding:4px 10px}
   .fp-nav .nav .lbl{white-space:nowrap}
-  .item{grid-template-columns:minmax(0,1fr);padding:12px 14px 14px}
+  .item{grid-template-columns:minmax(0,1fr);padding:12px 14px 6px}
   .ctl,.ctl.money,.ctl.md,.ctl.sm{flex:1 1 100%}
 }
 @container (max-width:640px){
   .content{padding:20px 16px 40px}
   .r-forms{grid-template-columns:16px 60px minmax(0,1fr) auto}
   .r-forms .c-due,.r-forms .c-freq{display:none}
+  .r-forms.read{grid-template-columns:60px minmax(0,1fr) auto}
   .r-due{grid-template-columns:44px minmax(0,1fr) auto}
   .r-due .code,.r-due .c-in{display:none}
   .r-tpl{grid-template-columns:60px minmax(0,1fr) auto}
@@ -481,6 +491,7 @@ td.wrap{white-space:normal;min-width:200px;color:var(--fg-2)}
     <span class="grow"></span>
     <label>Platform <span class="seg" id="seg-platform"><button data-act="platform:win" aria-pressed="true">Windows</button><button data-act="platform:mac" aria-pressed="false">macOS</button></span></label>
     <label>Theme <span class="seg" id="seg-theme"><button data-act="theme:light"><i data-i="sun"></i>Light</button><button data-act="theme:dark"><i data-i="moon"></i>Dark</button><button data-act="theme:system"><i data-i="monitor"></i>System</button></span></label>
+    <label>Data <span class="seg" id="seg-data"><button data-act="data:sample" aria-pressed="true">Sample</button><button data-act="data:fresh" aria-pressed="false">Fresh install</button></span></label>
     <span class="seg" id="seg-mode"><button data-act="mode:shell" aria-pressed="true">App</button><button data-act="mode:ds" aria-pressed="false">Components</button><button data-act="mode:forms" aria-pressed="false">Forms</button></span>
   </div>
 
@@ -544,6 +555,7 @@ const P={
  history:'<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>',
  chevDown:'<path d="m6 9 6 6 6-6"/>',
  chevRight:'<path d="m9 18 6-6-6-6"/>',
+ chevLeft:'<path d="m15 18-6-6 6-6"/>',
  upDown:'<path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/>',
  pencil:'<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>',
  check:'<path d="M20 6 9 17l-5-5"/>',
@@ -581,17 +593,18 @@ const FORMS={
 const PACKS={'Non-VAT business':['2551Q','1701Q','1701','0619-E','1601-EQ'],'VAT business':['2550Q','1702Q','1702-RT','0619-E','1601-EQ'],'Employer':['1601-C','1604-C'],'Professional':['1701Q','1701','2551Q']};
 const DATA=[
  {id:'gc',name:'Goldcoders Corp',tin:'009-123-456',type:'Corporation',hue:222,
-  forms:new Set(['1601-C','0619-E','1601-EQ','2550Q','1702Q','1702-RT','1604-C']),
-  templates:{'00000':{'1601-C':{kept:6,marked:2,updated:'Sep 9, 2026'},'2550Q':{kept:4,marked:3,updated:'Jul 20, 2026'}},'00001':{}},
+  years:{'00000':{2025:new Set(['1601-C','0619-E','2550Q','1702Q','1702-RT','1604-C']),2026:new Set(['1601-C','0619-E','1601-EQ','2550Q','1702Q','1702-RT','1604-C'])},'00001':{2026:new Set(['1601-C','0619-E'])},'00002':{}},
+  templates:{'00000':{'1601-C':{kept:6,marked:2,updated:'Sep 9, 2026'},'2550Q':{kept:4,marked:3,updated:'Jul 20, 2026'}},'00001':{},'00002':{}},
   branches:[
    {code:'00000',name:'Head office',location:'Makati City, Metro Manila',rdo:'050 · South Makati',address:'12F Ayala Tower One, Ayala Avenue, Makati City',zip:'1226',phone:'(02) 8812 4400',email:'tax@goldcoders.ph'},
    {code:'00001',name:'Cebu branch',location:'Cebu City, Cebu',rdo:'081 · Cebu City North',address:'3F Cebu Business Park Tower, Cebu City',zip:'6000',phone:null,email:null},
+   {code:'00002',name:'Davao branch',location:'Davao City, Davao del Sur',rdo:'113A · West Davao City',address:'2F Lanang Business Park, Davao City',zip:'8000',phone:null,email:null},
   ]},
  {id:'maria',name:'Maria Santos Dela Cruz',tin:'234-567-890',type:'Individual · Professional',hue:340,
-  forms:new Set(['1701Q','1701','2551Q']),templates:{'00000':{'1701Q':{kept:5,marked:1,updated:'Aug 14, 2026'}}},
+  years:{'00000':{2026:new Set(['1701Q','1701','2551Q'])}},templates:{'00000':{'1701Q':{kept:5,marked:1,updated:'Aug 14, 2026'}}},
   branches:[{code:'00000',name:'Head office',location:'Quezon City, Metro Manila',rdo:'038 · North Quezon City',address:'21 Maginhawa St., Teachers Village, Quezon City',zip:'1101',phone:'0917 555 0142',email:'maria.dc@example.com'}]},
  {id:'nena',name:'Sari-Sari ni Aling Nena',tin:'345-678-901',type:'Individual · Sole proprietor',hue:150,
-  forms:new Set(['2551Q','1701Q','1701']),templates:{'00000':{}},
+  years:{'00000':{2026:new Set(['2551Q','1701Q','1701'])}},templates:{'00000':{}},
   branches:[{code:'00000',name:'Head office',location:'Pasig City, Metro Manila',rdo:'043 · Pasig City',address:'88 Dr. Sixto Antonio Ave., Caniogan, Pasig City',zip:'1606',phone:'0928 555 0199',email:null}]},
 ];
 const DUE=[
@@ -605,13 +618,19 @@ const DUE=[
  {date:'2027-01-31',code:'1604-C',period:'2026',tp:'gc',br:'00000',status:'Not started'},
  {date:'2027-04-15',code:'1702-RT',period:'TY 2026',tp:'gc',br:'00000',status:'Not started'},
 ];
+/* kept = setup answers a template snapshot of that return would keep (amounts, percentages and computed fields dropped) */
 const FILED=[
- {date:'Oct 9, 2026',code:'1601-C',period:'September 2026',tp:'gc',br:'00000'},
- {date:'Oct 9, 2026',code:'0619-E',period:'September 2026',tp:'gc',br:'00000'},
- {date:'Oct 8, 2026',code:'0619-E',period:'September 2026',tp:'gc',br:'00001'},
- {date:'Aug 14, 2026',code:'1701Q',period:'Q2 2026',tp:'maria',br:'00000'},
- {date:'Jul 24, 2026',code:'2550Q',period:'Q2 2026',tp:'gc',br:'00000'},
- {date:'Jul 23, 2026',code:'2551Q',period:'Q2 2026',tp:'nena',br:'00000'},
+ {date:'Oct 9, 2026',code:'1601-C',period:'September 2026',tp:'gc',br:'00000',kept:6},
+ {date:'Oct 9, 2026',code:'0619-E',period:'September 2026',tp:'gc',br:'00000',kept:5},
+ {date:'Oct 8, 2026',code:'0619-E',period:'September 2026',tp:'gc',br:'00001',kept:5},
+ {date:'Aug 14, 2026',code:'1701Q',period:'Q2 2026',tp:'maria',br:'00000',kept:5},
+ {date:'Jul 24, 2026',code:'2550Q',period:'Q2 2026',tp:'gc',br:'00000',kept:4},
+ {date:'Jul 23, 2026',code:'2551Q',period:'Q2 2026',tp:'nena',br:'00000',kept:4},
+];
+/* saved (unfiled) returns; Save draft on a form page adds to this list */
+const SAVED=[
+ {date:'Oct 12, 2026',code:'2550Q',period:'Q3 2026',tp:'gc',br:'00000',kept:7},
+ {date:'Oct 3, 2026',code:'1701Q',period:'Q3 2026',tp:'maria',br:'00000',kept:6},
 ];
 const NOTIFS=[
  {t:'2550Q for Q3 2026 is due in 11 days',s:'Goldcoders Corp · Head office',when:'2h ago',kind:'warning',icon:'alert',unread:true},
@@ -625,7 +644,8 @@ const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov',
 const MONTHS_L=['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 /* ---------- state ---------- */
-const S={platform:'win',theme:'system',mode:'shell',sidebar:true,panel:null,view:'home',tp:'gc',br:'00000',year:2026,
+const S={platform:'win',theme:'system',mode:'shell',sidebar:true,panel:null,view:'home',tp:'gc',br:'00000',year:2026,fresh:false,
+  addYear:false,addYearSel:null,addYearCopy:true,formsEdit:null,formsQ:'',formsFreq:'All',draft:null,tinErr:null,
   editPanel:false,panelErr:null,editSec:null,open:{taxpayer:true,branch:true,address:true,security:false},
   menu:false,overlay:null,palQ:'',palIdx:0,newSel:null,hist:[],fwd:[],showRecent:true,lockAfter:'15m',copyPrompt:true,
   formCode:null,formPeriod:null,formMode:null,fsForm:null,fsQ:'',fsFreq:'All'};
@@ -641,6 +661,30 @@ const tplOf=(t,code)=>t.templates[S.br]?.[code];
 const daysUntil=iso=>Math.round((new Date(iso+'T00:00:00')-TODAY)/864e5);
 const statusChip=s=>s==='Draft'?`<span class="chip accent">Draft</span>`:s==='Filed'?`<span class="chip success">${ic('check')}Filed</span>`:`<span class="chip">Not started</span>`;
 const isMac=()=>S.platform==='mac';
+const fmtDate=d=>`${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+/* tax years belong to a branch; each year has its own forms set */
+const MINY=2010,MAXY=TODAY.getFullYear()+1;
+const yearsOf=(t=tp(),bc=S.br)=>Object.keys(t.years[bc]||{}).map(Number).sort((a,b)=>a-b);
+const formsOf=(t=tp(),bc=S.br,y=S.year)=>t.years[bc]?.[y]||new Set();
+function fixYear(){const ys=yearsOf(),now=TODAY.getFullYear();if(!ys.includes(S.year))S.year=ys.includes(now)?now:ys.length?ys[ys.length-1]:null}
+/* data-layer guard: the UI dropdown and this function share the same bound */
+function addTaxYear(t,bc,y,copy){
+  if(!Number.isInteger(y)||y<MINY||y>MAXY)return {err:`Choose a tax year from ${MINY} to ${MAXY}.`};
+  const ys=yearsOf(t,bc);if(ys.includes(y))return {err:`${y} is already a tax year for this branch.`};
+  const src=copy&&ys.length?ys[ys.length-1]:null,forms=src?new Set(t.years[bc][src]):new Set();
+  (t.years[bc]=t.years[bc]||{})[y]=forms;return {src,n:forms.size};
+}
+function sched(c,y){
+  const f=FORMS[c],now=TODAY.getFullYear(),day=(f.due.match(/\d+/)||['10'])[0];
+  if(f.freq==='As needed')return {next:'per transaction',due:''};
+  if(y===now)return {next:f.period,due:f.due};
+  if(f.freq==='Annual')return {next:y>now?`TY ${y}`:null,due:f.due.replace(/\d{4}$/,y+1)};
+  if(y>now)return {next:f.freq==='Monthly'?`January ${y}`:`Q1 ${y}`,due:`${f.freq==='Monthly'?'Feb':'Apr'} ${day}, ${y}`};
+  return {next:null,due:`Jan ${day}, ${y+1}`};
+}
+function newestReturn(tid,bc,code){return [...SAVED,...FILED].filter(r=>r.tp===tid&&r.br===bc&&normCode(r.code)===normCode(code)).sort((a,b)=>new Date(b.date)-new Date(a.date))[0]}
+const TP_VIEWS=['profile','forms','templates','form'];
+const NEW_TP_TOAST='New taxpayer form opens in the main area.';
 
 function go(view){if(view!==S.view){S.hist.push(S.view);S.fwd=[];S.view=view;S.editSec=null}S.menu=false;if(matchMedia('(max-width:860px)').matches)S.sidebar=false;render();document.getElementById('main-scroll').scrollTop=0}
 
@@ -653,21 +697,24 @@ function renderChrome(){
   document.getElementById('b-back').disabled=!S.hist.length;
   document.getElementById('b-fwd').disabled=!S.fwd.length;
   document.getElementById('b-bell').setAttribute('aria-pressed',S.panel==='notifs');
-  document.getElementById('bell-dot').hidden=!NOTIFS.some(n=>n.unread);
+  document.getElementById('bell-dot').hidden=S.fresh||!NOTIFS.some(n=>n.unread);
   const tIcon={light:'sun',dark:'moon',system:'monitor'}[S.theme];
   const tb=document.getElementById('b-theme');tb.innerHTML=ic(tIcon);tb.title=tb.ariaLabel=`Theme: ${S.theme} (click to change)`;
   document.getElementById('kbd').textContent=isMac()?'⌘K':'Ctrl K';
-  for(const [id,key] of [['seg-platform',S.platform],['seg-theme',S.theme],['seg-mode',S.mode]])
+  for(const [id,key] of [['seg-platform',S.platform],['seg-theme',S.theme],['seg-mode',S.mode],['seg-data',S.fresh?'fresh':'sample']])
     document.querySelectorAll(`#${id} button`).forEach(b=>b.setAttribute('aria-pressed',b.dataset.act.split(':')[1]===key));
-  const t=tp(),b=br();
   const pill=document.getElementById('pill');
   pill.setAttribute('aria-expanded',S.panel==='profile');
-  pill.innerHTML=`${av(t.name,t.hue,20)}<span class="nm">${esc(t.name)}</span><span class="tin mono">${t.tin}-${b.code}</span><span class="bc mono">${b.code}</span>${ic('chevDown')}`;
+  pill.classList.toggle('add',S.fresh);
+  const chev=ic(S.panel==='profile'?'chevLeft':'chevRight');
+  if(S.fresh){pill.innerHTML=`${ic('plus')}<span class="nm">Add a taxpayer</span>${chev}`;return}
+  const t=tp(),b=br();
+  pill.innerHTML=`${av(t.name,t.hue,20)}<span class="nm">${esc(t.name)}</span><span class="tin mono">${t.tin}-${b.code}</span><span class="bc mono">${b.code}</span>${chev}`;
 }
 function renderSidebar(){
   const nav=[['home','home','Home'],['library','file','Form library'],['calendar','calendar','Calendar'],['filings','history','Filings']];
   let h=nav.map(([v,i,l])=>`<button class="nav" data-act="go:${v}" ${S.view===v?'aria-current="page"':''}>${ic(i)}<span class="lbl">${l}</span></button>`).join('');
-  if(S.showRecent){
+  if(S.showRecent&&!S.fresh){
     h+=`<div class="glabel">Recent</div>`+RECENT.map(r=>`<button class="nav" data-act="recent:${r.code}:${r.tp}" title="${r.code} ${r.period} · ${esc(tpById(r.tp).name)}">${ic('file')}<span class="lbl">${r.code} ${r.period} · ${esc(tpById(r.tp).name)}</span></button>`).join('');
   }
   document.getElementById('sb-nav').innerHTML=h;
@@ -682,11 +729,18 @@ function renderSidebar(){
 function renderPanel(){
   const el=document.getElementById('rpanel');
   if(S.panel==='notifs'){
-    el.innerHTML=`<div class="rp-head"><h2>Notifications</h2><button class="btn ghost sm" data-act="markall" ${NOTIFS.some(n=>n.unread)?'':'disabled'}>Mark all read</button></div>
-    <div class="rp-scroll">${NOTIFS.map(n=>`<div class="notif"><span class="ico ${n.kind}">${ic(n.icon)}</span><div class="tx"><b>${esc(n.t)}</b><span>${esc(n.s)}</span></div><div class="when">${n.when}${n.unread?'<span class="udot" aria-label="Unread"></span>':''}</div></div>`).join('')}</div>`;
+    const list=S.fresh?[]:NOTIFS;
+    el.innerHTML=`<div class="rp-head"><h2>Notifications</h2><button class="btn ghost sm" data-act="markall" ${list.some(n=>n.unread)?'':'disabled'}>Mark all read</button></div>
+    <div class="rp-scroll">${list.length?'':'<div class="empty">No notifications yet.</div>'}${list.map(n=>`<div class="notif"><span class="ico ${n.kind}">${ic(n.icon)}</span><div class="tx"><b>${esc(n.t)}</b><span>${esc(n.s)}</span></div><div class="when">${n.when}${n.unread?'<span class="udot" aria-label="Unread"></span>':''}</div></div>`).join('')}</div>`;
     return;
   }
   if(S.panel!=='profile'){el.innerHTML='';return}
+  if(S.fresh){el.innerHTML=`<div class="rp-scroll" style="padding-top:4px"><div class="tp-hero" style="padding-top:32px">
+      <span class="stepc" style="width:56px;height:56px">${ic('user')}</span>
+      <h3>No taxpayer yet</h3>
+      <span class="tin" style="max-width:240px">The taxpayer you file for shows here, with its branches, tax years, forms and templates.</span>
+      <button class="btn primary sm" style="margin-top:8px" data-act="toast:${NEW_TP_TOAST}">${ic('plus')}New taxpayer</button>
+    </div></div>`;return}
   const t=tp(),b=br(),multi=t.branches.length>1;
   const hero=S.editPanel?`
     <div class="p-edit">
@@ -707,7 +761,7 @@ function renderPanel(){
       <dt>${ic('pin')}Location</dt><dd>${esc(b.location)}</dd>
       <dt>${ic('building')}RDO</dt><dd>${esc(b.rdo)}</dd>
     </dl>`;
-  const open=[['profile','user','Profile',''],['forms','file','Forms',t.forms.size],['templates','template','Templates',Object.keys(t.templates[S.br]||{}).length]];
+  const open=[['profile','user','Profile',''],['forms','file','Forms',formsOf().size],['templates','template','Templates',Object.keys(t.templates[S.br]||{}).length]];
   el.innerHTML=`<div class="rp-scroll" style="padding-top:4px">${hero}
     <div class="glabel">Open</div>
     ${open.map(([v,i,l,c])=>`<button class="nav" data-act="go:${v}" ${S.view===v?'aria-current="page"':''}>${ic(i)}<span class="lbl">${l}</span><span class="count">${c}</span></button>`).join('')}
@@ -716,12 +770,12 @@ function renderPanel(){
     <button class="nav" data-act="toast:New branch opens with head-office details filled in.">${ic('plus')}<span class="lbl">Add branch</span></button>
     <div class="glabel">Switch taxpayer</div>
     ${DATA.filter(x=>x.id!==t.id).map(x=>`<button class="nav" data-act="tp:${x.id}">${av(x.name,x.hue,20)}<span class="lbl">${esc(x.name)}</span><span class="count mono">${x.tin.slice(0,3)}</span></button>`).join('')}
-    <button class="nav" data-act="toast:New taxpayer form opens in the main area.">${ic('plus')}<span class="lbl">New taxpayer</span></button>
+    <button class="nav" data-act="toast:${NEW_TP_TOAST}">${ic('plus')}<span class="lbl">New taxpayer</span></button>
   </div>`;
 }
 function tpHead(){
   const t=tp(),b=br(),nT=Object.keys(t.templates[S.br]||{}).length;
-  const tabs=[['profile','Profile',''],['forms','Forms',t.forms.size],['templates','Templates',nT]];
+  const tabs=[['profile','Profile',''],['forms','Forms',formsOf().size],['templates','Templates',nT]];
   return `<div class="ph">${av(t.name,t.hue,40)}<div class="ph-text"><h1>${esc(t.name)}</h1>
     <div class="meta"><span class="mono">${t.tin}-${b.code}</span><span class="sep-dot"></span><span>${esc(b.name)}</span><span class="sep-dot"></span><span>${esc(t.type)}</span></div></div>
     <div class="ph-actions"><button class="btn secondary sm" data-act="copy-tin">${ic('copy')}Copy TIN</button><button class="btn primary sm" data-act="new">${ic('plus')}New return</button></div></div>
@@ -741,7 +795,9 @@ function field(label,f,value,opt={}){
   if(opt.inheritable&&br().code!=='00000'){
     dt+=`<span class="grow"></span>`+(editing?`<span class="inh-ctl">Same as head office<button class="switch" role="switch" data-act="inherit:${f}" aria-checked="${inherited}" aria-label="${label}: same as head office"></button></span>`:inherited?`<span class="chip">${ic('branch')}Head office</span>`:'');
   }
-  const dd=editing&&!opt.readonly?`<input class="input ${opt.mono?'mono':''}" data-f="${f}" value="${esc(value??'')}" ${inherited?'disabled':''} id="f-${f}">`:`<span class="${opt.mono?'mono':''}">${value?esc(value):'<span style="color:var(--fg-3)">Not set</span>'}</span>`;
+  if(editing&&S.draft&&S.draft[f]!=null)value=S.draft[f];
+  const err=editing&&opt.err;
+  const dd=editing&&!opt.readonly?`<input class="input ${opt.mono?'mono':''} ${err?'err':''}" data-f="${f}" value="${esc(value??'')}" ${inherited?'disabled':''} id="f-${f}" ${opt.attrs||''}>${err?`<div class="errtxt">${esc(err)}</div>`:''}`:`<span class="${opt.mono?'mono':''}">${value?esc(value):'<span style="color:var(--fg-3)">Not set</span>'}</span>`;
   return `<div class="field ${opt.full?'full':''} ${inherited?'inh':''}"><dt>${dt}</dt><dd>${dd}</dd></div>`;
 }
 const actions=sec=>S.editSec===sec?`<div class="form-actions"><button class="btn ghost sm" data-act="cancel-sec">Cancel</button><button class="btn primary sm" data-act="save-sec:${sec}">Save changes</button></div>`:'';
@@ -751,9 +807,9 @@ function viewProfile(){
   return tpHead()+`<div class="disc-group">
    ${disc('taxpayer','Taxpayer','Shared by every branch',`<dl class="fields">
       ${field('Registered name','name',t.name,{sec:'taxpayer',full:true})}
-      ${field('TIN','tin',t.tin,{sec:'taxpayer',mono:true,readonly:true})}
+      ${field('TIN','tin',t.tin,{sec:'taxpayer',mono:true,err:S.tinErr,attrs:'inputmode="numeric" maxlength="11" placeholder="000-000-000" autocomplete="off"'})}
       ${field('Taxpayer type','type',t.type,{sec:'taxpayer'})}
-    </dl>${actions('taxpayer')}`,true)}
+    </dl>${S.editSec==='taxpayer'?'<p class="helptxt">Changing the TIN moves every branch, tax year, return and template to the new number.</p>':''}${actions('taxpayer')}`,true)}
    ${disc('branch','Branch',isHO?'Head office':'Branch '+b.code,`<dl class="fields">
       ${field('Branch code','code',b.code,{sec:'branch',mono:true,readonly:true})}
       ${field('Branch name','bname',b.name,{sec:'branch'})}
@@ -773,34 +829,74 @@ function viewProfile(){
     </div>`,false)}
   </div>`;
 }
-function viewForms(){
-  const t=tp();
-  const codes=Object.keys(FORMS).sort((a,b)=>(t.forms.has(b)-t.forms.has(a)));
-  const banner=S.year===2027&&!S.copied?`<div class="banner"><p><b>Copy 2026 forms to 2027?</b> ${t.forms.size} forms and their templates carry over. Amounts never do.</p><button class="btn ghost sm" data-act="year:2026">Not now</button><button class="btn primary sm" data-act="copy-year">Copy forms</button></div>`:'';
-  return tpHead()+banner+`<div class="toolbar">
-    <span class="seg">${[2025,2026,2027].map(y=>`<button data-act="year:${y}" aria-pressed="${S.year===y}">${y}</button>`).join('')}</span>
-    <span class="grow"></span>
-    <span class="packs"><span class="lbl">Starter packs</span>${Object.keys(PACKS).map(p=>`<button class="btn secondary sm" data-act="pack:${p}">${p}</button>`).join('')}</span>
-  </div>
-  <div class="list">${codes.map(c=>{const f=FORMS[c],on=t.forms.has(c),tpl=tplOf(t,c);return `
-    <div class="row r-forms ${on?'':'dim'}">
-      <button class="check" role="checkbox" aria-checked="${on}" data-act="include:${c}" aria-label="File ${c} in ${S.year}">${ic('check')}</button>
+function addYearBand(ys){
+  const allowed=[];for(let y=MAXY;y>=MINY;y--)if(!ys.includes(y))allowed.push(y);
+  if(!allowed.length)return `<div class="banner"><p>Every tax year from ${MINY} to ${MAXY} is already added.</p>${ys.length?'<button class="btn ghost sm" data-act="ay-cancel">Cancel</button>':''}</div>`;
+  const last=ys[ys.length-1],now=TODAY.getFullYear();
+  if(!allowed.includes(S.addYearSel))S.addYearSel=last?(allowed.includes(last+1)?last+1:allowed[0]):(allowed.includes(now)?now:allowed[0]);
+  const sel=S.addYearSel,n=last?formsOf(tp(),S.br,last).size:0;
+  return `<div class="banner" role="group" aria-label="Add tax year"><b>Add tax year</b>
+    <select class="select" id="ay-year" aria-label="Tax year to add">${allowed.map(y=>`<option value="${y}" ${y===sel?'selected':''}>${y}</option>`).join('')}</select>
+    ${last?`<label class="chkl"><input type="checkbox" id="ay-copy" ${S.addYearCopy?'checked':''}>Copy ${n} form${n===1?'':'s'} from ${last}</label>`:''}
+    <span style="flex:1"></span>${ys.length?'<button class="btn ghost sm" data-act="ay-cancel">Cancel</button>':''}<button class="btn primary sm" data-act="ay-add">Add ${sel}</button></div>`;
+}
+function formSearchText(c){const n=FORMS[c].name;return (c+' '+c.replace(/-/g,'')+' '+n+(/Value-Added/.test(n)?' VAT':'')).toLowerCase()}
+function formsListHtml(){
+  const t=tp(),y=S.year,edit=S.formsEdit,tplChip=c=>tplOf(t,c)?`<span class="chip success">${ic('template')}Template</span>`:`<span class="chip">No template</span>`;
+  if(!edit){
+    const codes=Object.keys(FORMS).filter(c=>formsOf().has(c));
+    if(!codes.length)return `<div class="list"><div class="empty">No forms for ${y} yet.<div style="margin-top:12px"><button class="btn secondary sm" data-act="forms-edit">Choose forms</button></div></div></div>`;
+    return `<div class="list">${codes.map(c=>{const f=FORMS[c],sc=sched(c,y);return `
+    <div class="row r-forms read">
       <span class="code">${c}</span>
-      <span class="rname"><b>${esc(f.name)}</b><span>${on?`Next: ${f.period}`:'Not filed this year'}</span></span>
+      <span class="rname"><b>${esc(f.name)}</b><span>${sc.next?`Next: ${sc.next}`:'Every period filed'}</span></span>
       <span class="c-freq"><span class="chip">${f.freq}</span></span>
-      <span class="num c-due">${on?'Due '+f.due:''}</span>
-      <span>${on?(tpl?`<span class="chip success">${ic('template')}Template</span>`:`<span class="chip">No template</span>`):''}</span>
+      <span class="num c-due">${sc.due?'Due '+sc.due:''}</span>
+      <span>${tplChip(c)}</span>
+    </div>`}).join('')}</div>`;
+  }
+  const q=S.formsQ.trim().toLowerCase();
+  const codes=CATALOG.filter(c=>(S.formsFreq==='All'||FORMS[c].freq===S.formsFreq)&&(!q||formSearchText(c).includes(q)));
+  if(!codes.length)return `<div class="list"><div class="empty">No form matches. Try a code like 1601C or a word like VAT.</div></div>`;
+  return `<div class="list">${codes.map(c=>{const f=FORMS[c],on=edit.has(c),sc=sched(c,y);return `
+    <div class="row r-forms ${on?'':'dim'}">
+      <button class="check" role="checkbox" aria-checked="${on}" data-act="include:${c}" aria-label="File ${c} in ${y}">${ic('check')}</button>
+      <span class="code">${c}</span>
+      <span class="rname"><b>${esc(f.name)}</b><span>${on?(sc.next?`Next: ${sc.next}`:'Every period filed'):'Not filed this year'}</span></span>
+      <span class="c-freq"><span class="chip">${f.freq}</span></span>
+      <span class="num c-due">${on&&sc.due?'Due '+sc.due:''}</span>
+      <span>${on?tplChip(c):''}</span>
     </div>`}).join('')}</div>`;
 }
+function viewForms(){
+  const b=br(),ys=yearsOf(),edit=S.formsEdit;
+  if(!ys.length)return tpHead()+`<p class="lede" style="margin:0 0 16px">${esc(b.name)} has no tax year yet. Add one to choose the forms it files.</p>`+addYearBand(ys);
+  const right=edit?`<span class="num">${edit.size} selected</span><button class="btn ghost sm" data-act="forms-cancel">Cancel</button><button class="btn primary sm" data-act="forms-save">Save forms</button>`
+    :`<button class="btn secondary sm" data-act="forms-edit">${ic('pencil')}Edit forms</button>`;
+  let h=tpHead()+`<div class="toolbar">
+    <span class="seg" role="group" aria-label="Tax year">${ys.map(y=>`<button data-act="year:${y}" aria-pressed="${S.year===y}">${y}</button>`).join('')}</span>
+    <button class="btn ghost sm" data-act="ay-open" aria-expanded="${S.addYear}">${ic('plus')}Add year</button>
+    <span class="grow"></span>${right}
+  </div>`+(S.addYear?addYearBand(ys):'');
+  if(edit)h+=`<div class="toolbar">
+    <label class="searchbtn">${ic('search')}<input id="forms-q" value="${esc(S.formsQ)}" placeholder="Find a form, like 1601C or VAT" autocomplete="off" aria-label="Find a form"></label>
+    <span class="seg" role="group" aria-label="Frequency">${FREQS.map(x=>`<button data-act="ff:${x}" aria-pressed="${S.formsFreq===x}">${x}</button>`).join('')}</span>
+  </div>
+  <div class="packs" style="margin-bottom:16px"><span class="lbl">Starter packs</span>${Object.keys(PACKS).map(p=>`<button class="btn secondary sm" data-act="pack:${p}">${p}</button>`).join('')}</div>`;
+  return h+`<div id="forms-list">${formsListHtml()}</div>`;
+}
 function viewTemplates(){
-  const t=tp(),codes=[...t.forms];
-  return tpHead()+`<div class="toolbar"><p class="lede" style="margin:0;flex:1">One template per form for this branch. A template keeps setup answers and marks the fields to fill each period. It never keeps amounts.</p></div>
-  <div class="list">${codes.map(c=>{const tpl=tplOf(t,c);return `
+  const t=tp(),b=br(),ys=yearsOf();
+  if(!ys.length)return tpHead()+`<div class="list"><div class="empty">${esc(b.name)} has no tax year yet. Add one to choose the forms it files.<div style="margin-top:12px"><button class="btn secondary sm" data-act="go:forms">${ic('plus')}Add year</button></div></div></div>`;
+  const codes=Object.keys(FORMS).filter(c=>formsOf().has(c));
+  const head=tpHead()+`<div class="toolbar"><p class="lede" style="margin:0;flex:1">One template per form for ${esc(b.name)}, kept across tax years. These are the forms it files in ${S.year}. A template keeps setup answers and never keeps amounts.</p></div>`;
+  if(!codes.length)return head+`<div class="list"><div class="empty">No forms for ${S.year} yet.<div style="margin-top:12px"><button class="btn secondary sm" data-act="forms-edit">Choose forms</button></div></div></div>`;
+  return head+`<div class="list">${codes.map(c=>{const tpl=tplOf(t,c);return `
     <div class="row r-tpl ${tpl?'':'dim'}">
       <span class="code">${c}</span>
       <span class="rname"><b>${esc(FORMS[c].name)}</b><span>${tpl?'Updated '+tpl.updated:'No template yet'}</span></span>
-      <span class="num c-count">${tpl?`${tpl.kept} kept · ${tpl.marked} marked`:''}</span>
-      <span style="justify-self:end">${tpl?`<button class="btn ghost sm" data-act="form-tpl:${c}">Open</button>`:`<button class="btn secondary sm" data-act="mk-tpl:${c}">${ic('plus')}Create</button>`}</span>
+      <span class="num c-count">${tpl?`${tpl.kept} answers kept`:''}</span>
+      <span style="justify-self:end;display:flex;gap:4px">${tpl?`<button class="btn ghost sm" data-act="tpl-update:${c}">Update</button><button class="btn ghost sm" data-act="tpl-del:${c}">Delete</button>`:`<button class="btn secondary sm" data-act="tpl-make:${c}">${ic('plus')}Create</button>`}</span>
     </div>`}).join('')}</div>`;
 }
 function dueRow(d){
@@ -814,7 +910,14 @@ function dueRow(d){
     <span class="c-in">${when}</span>
     <span style="justify-self:end">${statusChip(d.status)}</span></div>`;
 }
+function viewWelcome(){
+  const steps=[['user','Add a taxpayer','TIN, registered name and head-office address'],['calendar','Add a tax year','Any year up to next year, per branch'],['file','Choose its forms','All 43 BIR forms, or start from a pack']];
+  return `<div class="ph"><div class="ph-text"><h1>Welcome to eBIRForms</h1><p class="lede">Prepare, print and track BIR returns for every taxpayer you handle. Everything stays on this computer.</p></div></div>
+  <div class="list" style="margin-top:28px">${steps.map(([i,b,l],n)=>`<div class="row r-step"><span class="stepc">${n+1}</span>${ic(i)}<span class="rname"><b>${b}</b><span>${l}</span></span></div>`).join('')}
+    <div class="row"><span><button class="btn primary" data-act="toast:${NEW_TP_TOAST}">${ic('plus')}Add your first taxpayer</button></span></div></div>`;
+}
 function viewHome(){
+  if(S.fresh)return viewWelcome();
   const soon=DUE.filter(d=>daysUntil(d.date)<=30);
   const tps=new Set(soon.map(d=>d.tp)).size;
   return `<div class="ph"><div class="ph-text"><h1>Good afternoon, Juan</h1><p class="lede">${soon.length} returns are due in the next 30 days across ${tps} taxpayers. Wednesday, October 14, 2026.</p></div></div>
@@ -822,6 +925,7 @@ function viewHome(){
   <h2 class="sec">Recently filed</h2><div class="list">${FILED.slice(0,3).map(filedRow).join('')}</div>`;
 }
 function viewCalendar(){
+  if(S.fresh)return `<div class="ph"><div class="ph-text"><h1>Calendar</h1><p class="lede">Every deadline for the forms your taxpayers file, from the 2026 BIR tax calendar.</p></div></div><div class="list" style="margin-top:24px"><div class="empty">Deadlines show here once a taxpayer has forms for a tax year.</div></div>`;
   const groups={};DUE.forEach(d=>{const dt=new Date(d.date+'T00:00:00');const k=`${MONTHS_L[dt.getMonth()]} ${dt.getFullYear()}`;(groups[k]=groups[k]||[]).push(d)});
   return `<div class="ph"><div class="ph-text"><h1>Calendar</h1><p class="lede">Every deadline for the forms your taxpayers file, from the 2026 BIR tax calendar.</p></div></div>`+
    Object.entries(groups).map(([k,ds])=>`<h2 class="sec" style="margin-top:28px">${k}</h2><div class="list">${ds.map(dueRow).join('')}</div>`).join('');
@@ -831,11 +935,11 @@ function filedRow(f){
   return `<div class="row r-filed"><span class="code">${f.code}</span>
     <span class="rname"><b>${f.code} · ${f.period}</b><span>${esc(t.name)}${t.branches.length>1?' · '+esc(t.branches.find(x=>x.code===f.br).name):''}</span></span>
     <span class="num c-date">${f.date}</span>
-    <span style="justify-self:end">${has?`<span class="chip success">${ic('check')}Filed</span>`:`<button class="btn secondary sm" data-act="use-tpl:${f.tp}:${f.br}:${f.code}">${ic('template')}Use as template</button>`}</span></div>`;
+    <span style="justify-self:end">${has?`<span class="chip success">${ic('check')}Filed</span>`:`<button class="btn secondary sm" data-act="use-tpl:${FILED.indexOf(f)}">${ic('template')}Use as template</button>`}</span></div>`;
 }
 function viewFilings(){
   return `<div class="ph"><div class="ph-text"><h1>Filings</h1><p class="lede">Filed returns stay exactly as submitted. Use one as a template to prefill the next period.</p></div></div>
-  <div class="list" style="margin-top:24px">${FILED.map(filedRow).join('')}</div>`;
+  <div class="list" style="margin-top:24px">${S.fresh?'<div class="empty">Filed returns show here.</div>':FILED.map(filedRow).join('')}</div>`;
 }
 function viewSettings(){
   const sw=(k,l)=>`<button class="switch" role="switch" data-act="set:${k}" aria-checked="${S[k]}" aria-label="${l}"></button>`;
@@ -861,6 +965,7 @@ function viewSettings(){
   </div>`;
 }
 function renderMain(){
+  if(S.fresh&&TP_VIEWS.includes(S.view))S.view='home';
   const v={home:viewHome,calendar:viewCalendar,filings:viewFilings,settings:viewSettings,profile:viewProfile,forms:viewForms,templates:viewTemplates,library:viewLibrary,form:viewForm}[S.view];
   const c=document.getElementById('content');c.className='content'+(S.view==='form'||S.view==='library'?' wide':'');
   c.innerHTML=v();
@@ -868,8 +973,8 @@ function renderMain(){
 function paletteItems(){
   const q=S.palQ.trim().toLowerCase();
   const items=[
-   ...DATA.map(t=>({g:'Taxpayers',l:t.name,h:t.tin,a:`tp:${t.id}`,av:t})),
-   ...[['home','home','Home'],['calendar','calendar','Calendar'],['filings','history','Filings'],['profile','user','Tax profile'],['forms','file','Forms'],['templates','template','Templates'],['settings','settings','Settings']].map(([v,i,l])=>({g:'Go to',l,i,a:`go:${v}`})),
+   ...(S.fresh?[]:DATA).map(t=>({g:'Taxpayers',l:t.name,h:t.tin,a:`tp:${t.id}`,av:t})),
+   ...[['home','home','Home'],['calendar','calendar','Calendar'],['filings','history','Filings'],['profile','user','Tax profile'],['forms','file','Forms'],['templates','template','Templates'],['settings','settings','Settings']].filter(([v])=>!(S.fresh&&TP_VIEWS.includes(v))).map(([v,i,l])=>({g:'Go to',l,i,a:`go:${v}`})),
    ...SCHEMA.map(f=>({g:'Forms',l:`${f.c} · ${f.t}`,i:'file',a:`form:${f.c}`})),
    {g:'Actions',l:'Toggle sidebar',i:'panelLeft',a:'toggle-sidebar',h:isMac()?'⌘B':'Ctrl B'},
    {g:'Actions',l:'Change theme',i:'moon',a:'cycle-theme'},
@@ -891,7 +996,9 @@ function renderOverlay(){
     return;
   }
   if(S.overlay==='new'){
-    const t=tp(),b=br(),codes=[...t.forms];if(!S.newSel||!t.forms.has(S.newSel))S.newSel=codes[0];
+    const t=tp(),b=br(),codes=Object.keys(FORMS).filter(c=>formsOf().has(c));
+    if(S.fresh||!codes.length){S.overlay=null;root.innerHTML='';return}
+    if(!S.newSel||!codes.includes(S.newSel))S.newSel=codes[0];
     const f=FORMS[S.newSel];
     const periods=f.freq==='Monthly'?['October 2026','September 2026','August 2026']:f.freq==='Quarterly'?['Q3 2026','Q2 2026','Q1 2026']:['TY 2026','TY 2025'];
     const tpl=tplOf(t,S.newSel);
@@ -910,10 +1017,10 @@ let toastTimer;
 function toast(msg){
   const w=document.getElementById('win');let t=w.querySelector('.toast');
   if(!t){t=document.createElement('div');t.className='toast';t.setAttribute('role','status');w.appendChild(t)}
-  t.innerHTML=ic('checkCircle')+`<span>${esc(msg)}</span>`;clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.remove(),3200);
+  t.innerHTML=ic('checkCircle')+`<span>${esc(msg)}</span>`;clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.remove(),2600);
 }
 function applyTheme(){if(S.theme==='system')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',S.theme)}
-function render(){applyTheme();renderChrome();renderSidebar();renderPanel();renderMain();renderOverlay();if(S.mode==='ds')renderDS();if(S.mode==='forms')renderFS()}
+function render(){if(!S.fresh)fixYear();applyTheme();renderChrome();renderSidebar();renderPanel();renderMain();renderOverlay();if(S.mode==='ds')renderDS();if(S.mode==='forms')renderFS()}
 
 /* ---------- actions ---------- */
 function act(a,el){
@@ -923,6 +1030,7 @@ function act(a,el){
    case 'theme':S.theme=arg;break;
    case 'cycle-theme':S.theme={light:'dark',dark:'system',system:'light'}[S.theme];break;
    case 'mode':S.mode=arg;break;
+   case 'data':S.fresh=arg==='fresh';S.view='home';S.hist=[];S.fwd=[];S.overlay=null;S.formsEdit=null;S.addYear=false;S.editSec=null;S.editPanel=false;S.draft=null;S.tinErr=null;break;
    case 'toggle-sidebar':S.sidebar=!S.sidebar;S.menu=false;break;
    case 'back':if(S.hist.length){S.fwd.push(S.view);S.view=S.hist.pop()}break;
    case 'fwd':if(S.fwd.length){S.hist.push(S.view);S.view=S.fwd.pop()}break;
@@ -931,14 +1039,18 @@ function act(a,el){
    case 'bell':S.panel=S.panel==='notifs'?null:'notifs';break;
    case 'markall':NOTIFS.forEach(n=>n.unread=false);break;
    case 'search':S.overlay='palette';S.palQ='';S.palIdx=0;document.getElementById('overlay-root').innerHTML='';break;
-   case 'new':S.overlay='new';break;
-   case 'newform':{const t=tp();if(!t.forms.has(arg)){toast(`${tp().name} does not file ${arg} in ${S.year}. Add it under Forms first.`);break}S.newSel=arg;S.overlay='new';break}
+   case 'new':{if(S.fresh){toast('Add a taxpayer first, then open a form for them.');return}
+     if(!yearsOf().length){toast(`${br().name} has no tax year yet. Add one to choose the forms it files.`);return}
+     if(!formsOf().size){toast(`No forms for ${S.year} yet. Choose them under Forms first.`);return}
+     S.overlay='new';break}
+   case 'newform':{const t=tp();if(!formsOf().has(arg)){toast(`${tp().name} does not file ${arg} in ${S.year}. Add it under Forms first.`);break}S.newSel=arg;S.overlay='new';break}
    case 'newsel':S.newSel=arg;break;
    case 'open-new':{const p=document.getElementById('new-period').value,tpl=tplOf(tp(),S.newSel);S.overlay=null;S.formCode=normCode(S.newSel);S.formPeriod=p;S.formMode=null;go('form');toast(`Opened ${S.newSel} for ${p}${tpl?`. Template applied, ${tpl.marked} guided stops.`:'.'}`);return}
    case 'sheet':S.sheet=S.sheet&&S.sheet.code===arg?null:{code:arg,doc:'index'};renderSheet();document.querySelectorAll('[data-act^="sheet:"]').forEach(b=>b.setAttribute('aria-pressed',!!S.sheet&&b.dataset.act==='sheet:'+S.sheet.code));return;
    case 'sheet-doc':if(S.sheet){S.sheet.doc=arg;renderSheet()}return;
    case 'sheet-close':S.sheet=null;renderSheet();document.querySelectorAll('[data-act^="sheet:"]').forEach(b=>b.setAttribute('aria-pressed','false'));return;
-   case 'form':if(S.sheet){S.sheet={code:normCode(arg),doc:'index'};renderSheet()}S.formCode=normCode(arg);S.formPeriod=null;S.formMode=null;S.overlay=null;return go('form');
+   case 'form':if(S.fresh&&S.mode==='shell'){S.overlay=null;render();toast('Add a taxpayer first, then open a form for them.');return}
+     if(S.sheet){S.sheet={code:normCode(arg),doc:'index'};renderSheet()}S.formCode=normCode(arg);S.formPeriod=null;S.formMode=null;S.overlay=null;return go('form');
    case 'form-tpl':S.formCode=normCode(arg);S.formPeriod=null;S.formMode='template';return go('form');
    case 'fs-open':if(S.sheet){S.sheet={code:arg,doc:'index'};renderSheet()}S.fsForm=arg;render();document.getElementById('fs').scrollTop=0;return;
    case 'fs-back':S.fsForm=null;render();document.getElementById('fs').scrollTop=0;return;
@@ -946,29 +1058,59 @@ function act(a,el){
    case 'jump':{const t=document.getElementById(arg);if(t){t.open=true;t.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'})}return}
    case 'close-overlay':S.overlay=null;break;
    case 'menu':S.menu=!S.menu;break;
-   case 'tp':S.tp=arg;S.br='00000';S.editPanel=false;S.editSec=null;toast(`Switched to ${tp().name}`);break;
-   case 'br':S.br=arg;S.editPanel=false;S.editSec=null;break;
+   case 'tp':S.tp=arg;S.br='00000';S.editPanel=false;S.editSec=null;S.formsEdit=null;S.addYear=false;toast(`Switched to ${tp().name}`);break;
+   case 'br':S.br=arg;S.editPanel=false;S.editSec=null;S.formsEdit=null;S.addYear=false;break;
    case 'panel-edit':S.editPanel=true;S.panelErr=null;break;
    case 'panel-cancel':S.editPanel=false;S.panelErr=null;break;
    case 'panel-save':{const t=tp(),b=br();const code=document.getElementById('pe-code').value.trim();
      if(b.code!=='00000'){if(!/^\d{5}$/.test(code)){S.panelErr='Branch code is 5 digits, like 00001.';break}
        if(code==='00000'||t.branches.some(x=>x!==b&&x.code===code)){S.panelErr=`Branch ${code} already exists.`;break}
-       if(code!==b.code){t.templates[code]=t.templates[b.code]||{};delete t.templates[b.code];b.code=code;S.br=code}}
+       if(code!==b.code){t.templates[code]=t.templates[b.code]||{};delete t.templates[b.code];t.years[code]=t.years[b.code]||{};delete t.years[b.code];b.code=code;S.br=code}}
      t.name=document.getElementById('pe-name').value.trim()||t.name;b.name=document.getElementById('pe-bname').value.trim()||b.name;b.location=document.getElementById('pe-loc').value.trim()||b.location;
      S.editPanel=false;S.panelErr=null;toast('Tax profile saved');break}
    case 'disc':S.open[arg]=!S.open[arg];if(!S.open[arg]&&S.editSec===arg)S.editSec=null;break;
-   case 'edit':S.editSec=arg;S.draftInh={};break;
-   case 'cancel-sec':S.editSec=null;break;
+   case 'edit':S.editSec=arg;S.draftInh={};S.draft=null;S.tinErr=null;break;
+   case 'cancel-sec':S.editSec=null;S.draft=null;S.tinErr=null;break;
    case 'inherit':{const b=br();if(b[arg]==null){b[arg]=ho()[arg]}else{b[arg]=null}break}
-   case 'save-sec':{const t=tp(),b=br();document.querySelectorAll('#content [data-f]').forEach(inp=>{if(inp.disabled)return;const f=inp.dataset.f,v=inp.value.trim();
+   case 'save-sec':{const t=tp(),b=br();
+     if(arg==='taxpayer'){
+       const get=f=>document.getElementById('f-'+f).value.trim(),raw=get('tin'),d=raw.replace(/-/g,'');
+       S.draft={name:get('name'),tin:raw,type:get('type')};
+       if(!/^[\d-]+$/.test(raw)||!/^\d{9}$/.test(d)){S.tinErr='TIN is 9 digits, like 123-456-789.';break}
+       const tin=`${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`,old=t.tin;
+       if(tin!==old){const other=DATA.find(x=>x!==t&&x.tin===tin);if(other){S.tinErr=null;render();toast(`${other.name} already uses TIN ${tin}.`);return}}
+       /* one transaction: the taxpayer record carries its branches, years, returns and templates, so moving the TIN moves all of them */
+       t.tin=tin;t.name=S.draft.name||t.name;t.type=S.draft.type||t.type;
+       S.editSec=null;S.draft=null;S.tinErr=null;
+       toast(tin!==old?`TIN changed to ${tin}. Every branch, tax year, return and template moved with it.`:'Changes saved');break}
+     document.querySelectorAll('#content [data-f]').forEach(inp=>{if(inp.disabled)return;const f=inp.dataset.f,v=inp.value.trim();
        if(arg==='taxpayer')t[f]=v||t[f];else if(arg==='branch'){b[f==='bname'?'name':f]=v||b[f==='bname'?'name':f]}else b[f]=v||null});
      S.editSec=null;toast('Changes saved');break}
-   case 'year':S.year=+arg;break;
-   case 'copy-year':S.copied=true;toast(`Copied ${tp().forms.size} forms and their templates to 2027`);break;
-   case 'pack':{const t=tp(),add=PACKS[arg].filter(c=>!t.forms.has(c));add.forEach(c=>t.forms.add(c));toast(add.length?`Added ${add.length} form${add.length>1?'s':''} from ${arg}`:`Every ${arg} form is already on the list`);break}
-   case 'include':{const t=tp();t.forms.has(arg)?t.forms.delete(arg):t.forms.add(arg);break}
-   case 'mk-tpl':{const t=tp();(t.templates[S.br]=t.templates[S.br]||{})[arg]={kept:0,marked:0,updated:'Oct 14, 2026'};toast(`${arg} template created. Click fields on the blank form to mark them.`);break}
-   case 'use-tpl':{const [tid,bc,code]=arg.split(':');const t=tpById(tid);(t.templates[bc]=t.templates[bc]||{})[code]={kept:5,marked:0,updated:'Oct 14, 2026'};toast(`${code} template made from the filed return. Click fields to keep, mark or clear them.`);break}
+   case 'year':S.year=+arg;S.formsEdit=null;S.addYear=false;break;
+   case 'ay-open':S.addYear=!S.addYear;S.addYearSel=null;S.addYearCopy=true;break;
+   case 'ay-cancel':S.addYear=false;break;
+   case 'ay-add':{const y=+document.getElementById('ay-year').value,cp=document.getElementById('ay-copy');
+     const r=addTaxYear(tp(),S.br,y,cp?cp.checked:false);if(r.err){toast(r.err);return}
+     S.year=y;S.addYear=false;S.formsEdit=null;S.addYearSel=null;
+     toast(r.src?`${y} added with ${r.n} form${r.n===1?'':'s'} from ${r.src}.`:`${y} added. Choose the forms it files.`);break}
+   case 'forms-edit':S.formsEdit=new Set(formsOf());S.formsQ='';S.formsFreq='All';S.addYear=false;if(S.view!=='forms')return go('forms');break;
+   case 'forms-cancel':S.formsEdit=null;break;
+   case 'forms-save':{const t=tp(),before=formsOf(),after=S.formsEdit;
+     const added=[...after].filter(c=>!before.has(c)).length,removed=[...before].filter(c=>!after.has(c)).length;
+     t.years[S.br][S.year]=new Set(after);S.formsEdit=null;toast(`${S.year} forms updated: ${added} added, ${removed} removed.`);break}
+   case 'ff':S.formsFreq=arg;break;
+   case 'pack':{if(!S.formsEdit)return;PACKS[arg].forEach(c=>S.formsEdit.add(c));toast(`${arg} forms selected. Save to keep them.`);break}
+   case 'include':{if(!S.formsEdit)return;S.formsEdit.has(arg)?S.formsEdit.delete(arg):S.formsEdit.add(arg);break}
+   case 'tpl-make':case 'tpl-update':{const t=tp(),r=newestReturn(t.id,S.br,arg);
+     if(!r){toast(`Open and save a ${arg} return first. The template keeps its setup answers.`);return}
+     const prev=tplOf(t,arg);(t.templates[S.br]=t.templates[S.br]||{})[arg]={kept:r.kept,marked:prev?prev.marked:0,updated:fmtDate(TODAY)};
+     toast(`${arg} template ${k==='tpl-make'?'created':'updated'} from the ${r.period} return. ${r.kept} answers kept.`);break}
+   case 'tpl-del':{const t=tp();delete t.templates[S.br][arg];toast(`${arg} template deleted.`);break}
+   case 'use-tpl':{const f=FILED[+arg],t=tpById(f.tp),prev=t.templates[f.br]?.[f.code];(t.templates[f.br]=t.templates[f.br]||{})[f.code]={kept:f.kept,marked:prev?prev.marked:0,updated:fmtDate(TODAY)};
+     toast(`${f.code} template made from the ${f.period} return. ${f.kept} answers kept.`);break}
+   case 'save-draft':{const f=SCH[arg],t=tp(),code=Object.keys(FORMS).find(c=>normCode(c)===arg)||arg;
+     SAVED.unshift({date:fmtDate(TODAY),code,period:periodFor(f),tp:t.id,br:S.br,kept:setupCount(f)});toast('Draft saved.');return}
+   case 'check':runCheck(arg,true);return;
    case 'open-due':{const [tid,bc,code]=arg.split(':');S.tp=tid;S.br=bc;S.newSel=code;S.overlay='new';break}
    case 'recent':{const [code,tid]=arg.split(':');S.tp=tid;S.br='00000';const r=RECENT.find(x=>x.code===code&&x.tp===tid);S.formCode=normCode(code);S.formPeriod=r?r.period:null;S.formMode=null;return go('form')}
    case 'copy-tin':{const s=`${tp().tin}-${br().code}`;navigator.clipboard?.writeText(s).then(()=>toast(`Copied ${s}`),()=>toast(`TIN: ${s}`));if(!navigator.clipboard)toast(`TIN: ${s}`);return}
@@ -990,8 +1132,12 @@ document.addEventListener('click',e=>{
   act(el.dataset.act,el);
 });
 function keepValue(t){if(t.dataset&&t.dataset.fid)FV[t.dataset.fid]=t.type==='checkbox'?(t.checked?'1':''):t.value}
-document.addEventListener('input',e=>{const t=e.target;if(t.id==='pal-q'){S.palQ=t.value;S.palIdx=0;renderOverlay();return}if(t.id==='fs-q'){S.fsQ=t.value;renderFSGrid();return}keepValue(t)});
-document.addEventListener('change',e=>keepValue(e.target));
+function afterEdit(t){keepValue(t);const fid=t.dataset&&t.dataset.fid;if(fid&&fid.startsWith('fv:'))scheduleCheck(fid.split(':')[1])}
+document.addEventListener('input',e=>{const t=e.target;if(t.id==='pal-q'){S.palQ=t.value;S.palIdx=0;renderOverlay();return}if(t.id==='fs-q'){S.fsQ=t.value;renderFSGrid();return}
+  if(t.id==='forms-q'){S.formsQ=t.value;document.getElementById('forms-list').innerHTML=formsListHtml();return}
+  if(t.id==='f-tin'){const v=t.value.replace(/[^\d-]/g,'');if(v!==t.value)t.value=v;return}
+  afterEdit(t)});
+document.addEventListener('change',e=>{const t=e.target;if(t.id==='ay-year'){S.addYearSel=+t.value;render();return}if(t.id==='ay-copy'){S.addYearCopy=t.checked;return}afterEdit(t)});
 document.addEventListener('focusout',e=>{const t=e.target;if(t.dataset&&t.dataset.money&&t.value&&!t.readOnly){const n=parseFloat(t.value.replace(/[^0-9.\-]/g,''));if(!isNaN(n)){t.value=n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});FV[t.dataset.fid]=t.value}}});
 document.addEventListener('keydown',e=>{
   const mod=e.metaKey||e.ctrlKey;
@@ -1011,6 +1157,10 @@ document.addEventListener('keydown',e=>{
 const SCHEMA=JSON.parse(document.getElementById('forms-data').textContent);
 const SCH=Object.fromEntries(SCHEMA.map(f=>[f.c,f]));
 const normCode=c=>String(c).replace(/-/g,'').toUpperCase();
+/* The Forms tab catalog is all 43 forms: the sample entries above keep their dates, the rest get typical ones for their frequency. */
+const TYPICAL={Monthly:{due:'Nov 10',period:'October 2026'},Quarterly:{due:'Oct 31',period:'Q3 2026'},Annual:{due:'Apr 15, 2027',period:'TY 2026'},'As needed':{due:'',period:''}};
+for(const f of SCHEMA){if(!Object.keys(FORMS).some(k=>normCode(k)===normCode(f.c)))FORMS[f.c]={name:f.t,freq:f.freq,...(TYPICAL[f.freq]||TYPICAL['As needed'])}}
+const CATALOG=Object.keys(FORMS).sort((a,b)=>normCode(a).localeCompare(normCode(b),'en',{numeric:true}));
 const FV={};
 const FREQS=['All','Monthly','Quarterly','Annual','As needed'];
 const fieldTotal=SCHEMA.reduce((n,f)=>n+f.n,0);
@@ -1052,12 +1202,16 @@ function tableHtml(it,id){
   }
   return `<div class="tbl-in"><table><thead><tr><th class="n">#</th>${it.cols.map(c=>`<th>${esc(c.l)}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>`;
 }
+/* validation messages, keyed by item id; every item reserves an 18px line for one */
+const VM={};
+const vline=id=>`<div class="vmsg" data-vk="${id}" title="${esc(VM[id]||'')}">${esc(VM[id]||'')}</div>`;
+const isTinItem=it=>{const fs=it.f||[];return /\bTIN\b|Identification Number/i.test(it.l)&&fs.length>=3&&fs.length<=5&&fs.every(x=>x.t==='text'||x.t==='int')};
 function itemHtml(it,base,ix){
   const id=`${base}:${ix}`,no=`<span class="ino ${it.no?'':'blank'}">${esc(it.no)}</span>`;
-  if(it.rows)return `<div class="item">${no}<div style="min-width:0"><div class="ilabel"><span class="tx">${esc(it.l)}</span><span class="chip">${it.rows} rows</span></div>${tableHtml(it,id)}</div></div>`;
+  if(it.rows)return `<div class="item">${no}<div style="min-width:0"><div class="ilabel"><span class="tx">${esc(it.l)}</span><span class="chip">${it.rows} rows</span></div>${tableHtml(it,id)}${vline(id)}</div></div>`;
   const fs=it.f||[];
-  if(it.l==='Additional details')return `<div class="item">${no}<div style="min-width:0"><details class="more"><summary>${ic('chevRight','chev')}${fs.length} more field${fs.length>1?'s':''} not yet placed on the paper layout</summary><div class="ctrls">${fs.map((f,j)=>ctrl(f,`${id}:${j}`,f.l,true)).join('')}</div></details></div></div>`;
-  const isTin=/\bTIN\b|Identification Number/i.test(it.l)&&fs.length>=3&&fs.length<=5&&fs.every(x=>x.t==='text'||x.t==='int');
+  if(it.l==='Additional details')return `<div class="item">${no}<div style="min-width:0"><details class="more"><summary>${ic('chevRight','chev')}${fs.length} more field${fs.length>1?'s':''} not yet placed on the paper layout</summary><div class="ctrls">${fs.map((f,j)=>ctrl(f,`${id}:${j}`,f.l,true)).join('')}</div></details>${vline(id)}</div></div>`;
+  const isTin=isTinItem(it);
   const allCalc=fs.length>0&&fs.every(x=>x.c),req=fs.some(x=>x.r),anyAuto=isTin||fs.some(x=>x.a&&!x.c);
   let controls='';
   if(isTin){
@@ -1071,7 +1225,62 @@ function itemHtml(it,base,ix){
   }
   return `<div class="item ${allCalc?'calc':''}">${no}<div style="min-width:0">
     <div class="ilabel"><span class="tx">${esc(it.l)}${req?'<span class="req" title="Required">*</span>':''}</span>${anyAuto?`<span class="chip">${ic('user')}From tax profile</span>`:''}${allCalc?`<span class="chip">${ic('lock')}Computed</span>`:''}</div>
-    <div class="ctrls">${controls}</div></div></div>`;
+    <div class="ctrls">${controls}</div>${vline(id)}</div></div>`;
+}
+/* Simulated validation. The app runs this off the UI thread; here a timer stands in for it. */
+function computeMsgs(f){
+  const base='fv:'+f.c,out=[];
+  f.parts.forEach((p,i)=>p.items.forEach((it,ix)=>{
+    const fs=it.f||[];if(it.rows||it.l==='Additional details'||!fs.some(x=>x.r)||isTinItem(it))return;
+    const id=`${base}:${i}:${ix}`,user=fs.map((x,j)=>[x,j]).filter(([x])=>!x.c&&!x.a);if(!user.length)return;
+    const radios=user.filter(([x])=>x.t==='radio'),others=user.filter(([x])=>x.t!=='radio');
+    const filled=(radios.length&&(FV[id+':r']??'')!=='')||others.some(([x,j])=>(FV[`${id}:${j}`]??'')!=='');
+    if(filled)return;
+    const lbl=it.l.replace(/[?:.\s]+$/,''),what=radios.length&&!others.length?'choose an answer for '+lbl:(others.every(([x])=>x.t==='sel')?'choose ':'enter ')+lbl;
+    const no=String(it.no||'').replace(/^(\d)(?!\d)/,'0$1');
+    out.push({text:no?`Item ${no}: ${what}.`:`${it.l}: ${what}.`});
+  }));
+  return out;
+}
+/* bind a message to its item: by field id, then by "Item NN" (leading zeros ignored), then by label words, else the first item */
+function bindMsgs(f,msgs){
+  const base='fv:'+f.c,items=[],out={};
+  f.parts.forEach((p,i)=>p.items.forEach((it,ix)=>items.push({key:`${base}:${i}:${ix}`,it})));
+  const words=t=>String(t).toLowerCase().match(/[a-z]{4,}/g)||[];
+  for(const m of msgs){
+    let hit=m.fid?items.find(x=>m.fid.startsWith(x.key+':')):null;
+    if(!hit){const mm=/\bItem\s+0*(\d+[A-Z]?)\b/i.exec(m.text);if(mm)hit=items.find(x=>String(x.it.no||'').replace(/^0+/,'').toUpperCase()===mm[1].toUpperCase())}
+    if(!hit){const w=new Set(words(m.text));let best=0;for(const x of items){const n=words(x.it.l).filter(v=>w.has(v)).length;if(n>best){best=n;hit=x}}}
+    hit=hit||items[0];
+    if(hit)out[hit.key]=out[hit.key]?out[hit.key]+' · '+m.text:m.text;
+  }
+  return out;
+}
+let checkTimer,runTimer;
+function scheduleCheck(code){clearTimeout(checkTimer);checkTimer=setTimeout(()=>runCheck(code,false),300)}
+function runCheck(code,explicit){
+  const f=SCH[code];if(!f)return;
+  clearTimeout(runTimer);document.querySelectorAll('.fp-checking').forEach(c=>c.hidden=false);
+  runTimer=setTimeout(()=>{
+    const base='fv:'+code,msgs=computeMsgs(f),map=bindMsgs(f,msgs);
+    Object.keys(VM).forEach(k=>{if(k.startsWith(base+':'))delete VM[k]});Object.assign(VM,map);
+    document.querySelectorAll(`.vmsg[data-vk^="${base}:"]`).forEach(el=>{el.textContent=VM[el.dataset.vk]||'';el.title=VM[el.dataset.vk]||''});
+    document.querySelectorAll('.fp-checking').forEach(c=>c.hidden=true);
+    if(explicit)toast(msgs.length?`${msgs.length} item${msgs.length>1?'s need':' needs'} an answer.`:'No problems found.');
+  },600);
+}
+/* answers a template snapshot of this return keeps: profile identity plus setup answers; amounts, percentages and computed fields are dropped */
+function setupCount(f){
+  const base='fv:'+f.c;let n=0;
+  f.parts.forEach(p=>p.items.forEach(it=>(it.f||[]).forEach(x=>{if(x.a&&!x.c)n++})));
+  for(const [k,v] of Object.entries(FV)){
+    if(!k.startsWith(base+':')||v===''||v==null)continue;
+    const [,,i,ix,j,col]=k.split(':'),it=f.parts[+i]?.items[+ix];if(!it)continue;
+    if(it.rows){const c=it.cols[+col];if(c&&!c.c&&c.t!=='money')n++;continue}
+    if(j==='r'){n++;continue}
+    const x=(it.f||[])[+j];if(x&&!x.c&&x.t!=='money'&&x.t!=='pct')n++;
+  }
+  return n;
 }
 const partName=(p,i)=>i===0&&/^Page \d+$/.test(p.n)?'Return details':p.n;
 function periodFor(f){return S.formPeriod||({Monthly:'October 2026',Quarterly:'Q3 2026',Annual:'TY 2026'}[f.freq]||'One-time return')}
@@ -1082,8 +1291,8 @@ function formPage(f,ctx){
       <div class="meta" style="margin:0 0 4px"><span class="code">BIR Form ${f.c}</span><span class="sep-dot"></span><span>Revision ${esc(f.rev)}</span></div>
       <h1>${esc(f.t)}</h1>
       <div class="fp-ctx"><span class="chip">${f.freq}</span><span class="chip">${f.pages} page${f.pages>1?'s':''}</span><span class="chip">${f.n} fields</span>${draft?`<span class="chip warning" title="Some fields are not yet placed under a numbered item">${ic('alert')}Draft layout</span>`:''}</div>
-    </div><div class="ph-actions"><button class="btn secondary sm" data-act="sheet:${f.c}" aria-pressed="${S.sheet&&S.sheet.code===f.c?'true':'false'}">${ic('file')}Print preview</button><button class="btn primary sm" data-act="toast:Draft saved.">Save draft</button></div></div>
-    <div class="fp-bar">${av(t.name,t.hue,20)}<b style="font-weight:600">${esc(t.name)}</b><span class="mono num">${t.tin}-${b.code}</span><span class="num">${esc(b.name)}</span><span class="sep-dot"></span><span class="num">For ${periodFor(f)}</span>${ctx==='showcase'?'<span class="chip">Sample taxpayer</span>':''}<span class="grow"></span><label class="inl">Guided mode<button class="switch" role="switch" aria-checked="${!!tplOf(t,f.c)}" data-act="toggle-sw" aria-label="Guided mode"></button></label></div>
+    </div><div class="ph-actions"><button class="btn secondary sm" data-act="sheet:${f.c}" aria-pressed="${S.sheet&&S.sheet.code===f.c?'true':'false'}">${ic('file')}Print preview</button><button class="btn secondary sm" data-act="check:${f.c}">${ic('checkCircle')}Check</button><button class="btn primary sm" data-act="save-draft:${f.c}">Save draft</button></div></div>
+    <div class="fp-bar">${av(t.name,t.hue,20)}<b style="font-weight:600">${esc(t.name)}</b><span class="mono num">${t.tin}-${b.code}</span><span class="num">${esc(b.name)}</span><span class="sep-dot"></span><span class="num">For ${periodFor(f)}</span>${ctx==='showcase'?'<span class="chip">Sample taxpayer</span>':''}<span class="chip accent fp-checking" role="status" hidden>Checking…</span><span class="grow"></span><label class="inl">Guided mode<button class="switch" role="switch" aria-checked="${!!tplOf(t,f.c)}" data-act="toggle-sw" aria-label="Guided mode"></button></label></div>
     ${tpl?`<div class="tbanner">${ic('template')}<p><b>Template mode.</b> Typing is off. Click a field to keep its value, mark it as a guided stop, or clear it.</p><button class="btn ghost sm" data-act="form:${f.c}">Done</button></div>`:''}
     <div class="fp">
       <nav class="fp-nav" aria-label="Parts of this form"><div class="navhead">On this form</div>${f.parts.map((p,i)=>`<button class="nav" data-act="jump:${pid(i)}"><span class="lbl">${esc(partName(p,i))}</span><span class="count">${p.items.length}</span></button>`).join('')}</nav>
@@ -1117,7 +1326,7 @@ function renderFS(){
    <p class="lead" style="color:var(--fg-2);max-width:66ch;margin:8px 0 0">One page design draws every form. Pick one to fill it in.</p>${eli5()}${formTools()}<div id="fs-grid">${formCards(filtered(),'fs-open')}</div>`;
 }
 function renderFSGrid(){const g=document.getElementById('fs-grid');if(g){g.innerHTML=formCards(filtered(),S.mode==='forms'?'fs-open':'form');const c=document.getElementById('fs-count');if(c)c.textContent=`${filtered().length} of ${SCHEMA.length}`}}
-function viewLibrary(){return `<div class="ph"><div class="ph-text"><h1>Form library</h1><p class="lede">Every return eBIRForms can prepare. Open one to fill it in for ${esc(tp().name)}.</p></div></div>${formTools()}<div id="fs-grid">${formCards(filtered(),'form')}</div>`}
+function viewLibrary(){return `<div class="ph"><div class="ph-text"><h1>Form library</h1><p class="lede">Every return eBIRForms can prepare. ${S.fresh?'Add a taxpayer to fill one in.':`Open one to fill it in for ${esc(tp().name)}.`}</p></div></div>${formTools()}<div id="fs-grid">${formCards(filtered(),'form')}</div>`}
 /* Print preview: the official frozen BIR sheet beside the screen form.
    Local copy (docs/ui-redesign/, file:// or localhost): load ../../html-frozen/ in a frame.
    Shared link: the sheets are not bundled, so explain and link out. */
@@ -1233,9 +1442,9 @@ function renderDS(){
   ${comp('Nav row',`<div style="width:240px;display:flex;flex-direction:column;gap:2px"><button class="nav" aria-current="page">${ic('home')}<span class="lbl">Home</span></button><button class="nav">${ic('file')}<span class="lbl">Forms</span><span class="count">7</span></button><button class="nav">${ic('settings')}<span class="lbl">Settings</span></button></div>`,
     ['32px tall, padding 0 8, gap 10, radius 8','16px icon + 13/500 label + optional count (12, fg-3)'],
     ['Resting text fg-2, current row fills selected','2px gap between rows','Labels truncate with an ellipsis, never wrap'])}
-  ${comp('Context pill',`<button class="pill" style="max-width:none">${av('Goldcoders Corp',222,20)}<span class="nm">Goldcoders Corp</span><span class="tin mono">009-123-456-00000</span>${ic('chevDown')}</button>`,
-    ['30px tall, full radius, 1px border','20px avatar, name 13/600, TIN mono 12, 14px chevron'],
-    ['Clicking it toggles the tax-profile panel','Shows the full TIN with the branch code','Below 600px it collapses to avatar and branch code'])}
+  ${comp('Context pill',`<button class="pill" style="max-width:none">${av('Goldcoders Corp',222,20)}<span class="nm">Goldcoders Corp</span><span class="tin mono">009-123-456-00000</span>${ic('chevRight')}</button><button class="pill add" style="max-width:none">${ic('plus')}<span class="nm">Add a taxpayer</span>${ic('chevRight')}</button>`,
+    ['30px tall, full radius, 1px border','20px avatar, name 13/600, TIN mono 12, 14px chevron','Chevron points right while the panel is closed, left while it is open'],
+    ['Clicking it toggles the tax-profile panel','Shows the full TIN with the branch code','With no taxpayer yet it reads “Add a taxpayer”','Below 600px it collapses to avatar and branch code'])}
   ${comp('Avatar',`${av('Goldcoders Corp',222,20)}${av('Goldcoders Corp',222,28)}${av('Maria Santos Dela Cruz',340,40)}${av('Sari-Sari ni Aling Nena',150,56)}`,
     ['Sizes 20 · 28 · 40 · 56','Initials: first and last capitalised word (Goldcoders Corp → GC)'],
     ['Hue comes from the taxpayer, so it stays the same everywhere','Tinted fill, not saturated','20 in rows and the pill, 40 in page headers, 56 in the panel'])}
@@ -1247,15 +1456,15 @@ function renderDS(){
   ${comp('Field',`<dl class="fields" style="width:100%"><div class="field"><dt><span>Registered name</span></dt><dd>Goldcoders Corp</dd></div><div class="field"><dt><span>Email</span><span class="grow"></span><span class="inh-ctl">Same as head office<button class="switch" role="switch" aria-checked="true" data-act="toggle-sw" aria-label="Same as head office"></button></span></dt><dd><input class="input" value="tax@goldcoders.ph" disabled></dd></div><div class="field"><dt><span>Branch code</span></dt><dd><input class="input mono err" value="0001"><div class="errtxt">Branch code is 5 digits, like 00001.</div></dd></div></dl>`,
     ['Label 12 fg-2 above value 13 fg','Two-column grid, gaps 16 × 32; one column below 640px','Input 32px, radius 8'],
     ['Inherited values read fg-2 with a “Head office” chip','In edit mode the chip becomes a “Same as head office” switch','Errors say what to type, under the input'],true)}
-  ${comp('Tabs, segmented control, switch, checkbox',`<div class="tabs" style="margin:0;width:100%"><button class="tab" aria-selected="true">Profile</button><button class="tab" aria-selected="false">Forms<span class="count">7</span></button><button class="tab" aria-selected="false">Templates<span class="count">2</span></button></div><span class="seg"><button aria-pressed="false">2025</button><button aria-pressed="true">2026</button><button aria-pressed="false">2027</button></span><button class="switch" role="switch" aria-checked="true" data-act="toggle-sw" aria-label="Example switch"></button><button class="check" role="checkbox" aria-checked="true" aria-label="Example checkbox">${ic('check')}</button>`,
+  ${comp('Tabs, segmented control, switch, checkbox',`<div class="tabs" style="margin:0;width:100%"><button class="tab" aria-selected="true">Profile</button><button class="tab" aria-selected="false">Forms<span class="count">7</span></button><button class="tab" aria-selected="false">Templates<span class="count">2</span></button></div><span class="seg"><button aria-pressed="false">2025</button><button aria-pressed="true">2026</button></span><button class="btn ghost sm">${ic('plus')}Add year</button><button class="switch" role="switch" aria-checked="true" data-act="toggle-sw" aria-label="Example switch"></button><button class="check" role="checkbox" aria-checked="true" aria-label="Example checkbox">${ic('check')}</button>`,
     ['Tabs: 36px, 13/500, 2px fg underline, count chip','Segmented: 2px track padding, 24px segments, 12/500','Switch 32×18, knob 14 · Checkbox 16, radius 4'],
-    ['Tabs switch views of one object (a taxpayer)','Segmented picks one of 2–4 short values (year, theme)','Switch applies at once; checkbox is part of a list or form'],true)}
+    ['Tabs switch views of one object (a taxpayer)','Segmented picks one of a few short values (theme, frequency). The tax-year control lists only the years the branch has, oldest first, with a ghost “Add year” beside it','Switch applies at once; checkbox is part of a list or form, such as the Forms tab in edit mode'],true)}
   ${comp('Status chip',`${statusChip('Not started')}${statusChip('Draft')}${statusChip('Filed')}<span class="chip warning">In 11 days</span><span class="chip danger">Overdue</span><span class="chip">${ic('branch')}Head office</span>`,
     ['20px, full radius, 11/500','Tinted fill of the semantic color, optional 12px icon'],
     ['Draft = accent, Filed = success, due within 14 days = warning, overdue = danger','Not started and neutral facts use the plain chip','Never use a chip as a button'])}
   ${comp('Side panel',`<div style="width:300px;border:1px solid var(--border);border-radius:12px;background:var(--bg);overflow:hidden"><div class="rp-head"><h2>Notifications</h2><button class="btn ghost sm">Mark all read</button></div><div style="padding:0 12px 12px"><div class="notif"><span class="ico warning">${ic('alert')}</span><div class="tx"><b>2550Q is due in 11 days</b><span>Goldcoders Corp</span></div><div class="when">2h<span class="udot"></span></div></div></div></div>`,
     ['320px, on the window ground (no card)','Header 40px: title 14/600 and at most one ghost action'],
-    ['No close button and no separator line','Opening one panel replaces the other','Tax-profile panel: avatar 56, name, TIN, facts, then Open / Branches / Switch taxpayer'])}
+    ['No close button and no separator line','Opening one panel replaces the other','Tax-profile panel: avatar 56, name, TIN, facts, then Open / Branches / Switch taxpayer','With no taxpayer: “No taxpayer yet”, one line on what the panel is for, and New taxpayer','Scrolls vertically only'])}
   `;
 }
 

@@ -14,11 +14,11 @@ Agents: read [`AGENTS.md`](AGENTS.md) first. It says how to use each file for ea
 
 | Path | What it is |
 | --- | --- |
-| [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md) | **Start here.** The rules agents follow: tokens (light and dark), type, sizes, the wrapper components to build first, shell layout, the disclosure that replaces the old collapsible, the form-page rules, and a porting checklist. |
-| [`prototype/shell-prototype.html`](prototype/shell-prototype.html) | The interactive prototype, the same file as the published claude.ai version 4. Open it in a browser. Tabs: **App** (the redesigned shell), **Components** (the design system rendered live), **Forms** (all 43 forms as screen form pages). |
+| [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md) | **Start here.** The rules agents follow: tokens (light and dark), type, sizes, the wrapper components to build first, shell layout, the disclosure that replaces the old collapsible, the empty state, the tax-profile flows (tax years per branch, the Forms edit mode with starter packs, TIN editing, templates), the form-page rules, and a porting checklist. |
+| [`prototype/shell-prototype.html`](prototype/shell-prototype.html) | The interactive prototype, and the current one: the published claude.ai version 4 predates the tax-profile flows. Open it in a browser. Tabs: **App** (the redesigned shell), **Components** (the design system rendered live), **Forms** (all 43 forms as screen form pages). |
 | `prototype/shell-prototype.src.html` | The editable source of the prototype. It has a `__FORMS_JSON__` placeholder where the form data goes. Edit this, then rebuild. |
 | `forms/forms_extract.py` | Builds the form schema from a buwiz-forms checkout. It only reads: `rules/forms/*/fields.json`, the `html-frozen/*/index.html` text layer, and `crates/bir-core/src/forms/registry.rs`. |
-| `forms/forms-schema.json` | Its output: 43 forms, 9,185 visible fields, grouped into Parts, numbered items and schedule tables. |
+| `forms/forms-schema.json` | Its output: 43 forms, 9,185 visible fields, grouped into Parts, numbered items and schedule tables. Each field has `k`, its rules-corpus `field_key`; each table has `keys`, one per cell. |
 | `design-canvas/tax-profile-screens/` | Source of the "Tax Profile Screens" design canvas: Profile with the panel open, branch address editing, Forms tab, Templates tab, and a dark-mode panel edit. `canvas.json` is the layout; each `.dc.html` is one screen. |
 | `scripts/build_prototype.py` | Inlines the schema into the source page. |
 
