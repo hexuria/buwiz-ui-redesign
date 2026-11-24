@@ -4,13 +4,12 @@ This repo is the **design reference** for the eBIRForms desktop app redesign.
 The product code lives in [hexuria/buwiz-forms](https://github.com/hexuria/buwiz-forms).
 Nothing here ships; everything here is the spec that product code must match.
 
-The UI there is moving to **gpui-shell**: JavaScript views in `app/`
-(`app/main.js`, `app/shell/*.js`) on a thin Rust host, `crates/bir-shell`,
-which exposes bir-core through the `bir` host module. Its plan and cutover gate
-are in buwiz-forms `docs/plans/gpui-shell-migration.md` (issue #135). The
-painted Rust UI in `crates/bir-desktop` stays the reference until that gate
-passes. Build new screens in whichever layer the request names; the design is
-the same in both.
+The UI there is the **NSH app**: TSX screens in `nsh/` (`nsh/App.tsx`,
+`nsh/shell/`, `nsh/screens/`) over a Rust crate that exposes bir-core. Read
+buwiz-forms `nsh/AGENTS.md` before you change it. The hosts this file used to
+name are gone from buwiz-forms: gpui-shell (`app/` with `crates/bir-shell`,
+removed in November 2026) and the painted Rust UI (`crates/bir-desktop`). Do
+not look for them or build in them.
 
 [hexuria/ebirforms PR #8](https://github.com/hexuria/ebirforms/pull/8) built
 this design end to end in another GPUI binding (gpuix, React): the shell, all
@@ -41,9 +40,9 @@ stop only when its **Done** line holds.
    theme value you see there. Each one has a token in `DESIGN_SYSTEM.md`.
 3. Make sure the wrapper components from `DESIGN_SYSTEM.md` exist
    (IconButton, AppButton, NavRow, ContextPill, Avatar, Disclosure, Field,
-   StatusChip, SidePanel, Segmented), and build any missing ones first: in
-   gpui-shell as one shared module under `app/shell/`, in the painted UI in
-   `crates/bir-desktop/src/components/ui/`. Screens call the wrappers.
+   StatusChip, SidePanel, Segmented), and build any missing ones first, in
+   buwiz-forms `nsh/ui/` (its `README.md` lists what exists; screens import
+   from `ui/index.ts`, never from the base controls). Screens call the wrappers.
    Sizes and colors come from the wrappers and tokens.
 4. Port one screen at a time with the porting checklist at the end of
    `DESIGN_SYSTEM.md`.
@@ -120,7 +119,7 @@ Measured in hexuria/ebirforms PR #8. gpuix lays out with Taffy, as GPUI does,
 so the layout lessons carry over; the last group does not.
 
 - **Scroll one axis.** Give pages and side panels vertical-only scrolling
-  (`overflow_y_scroll()` in gpui-shell, never `overflow_scroll()`). Both-axis
+  (in GPUI terms `overflow_y_scroll()`, never `overflow_scroll()`). Both-axis
   scrollers let every page drift sideways under a trackpad. With y only, GPUI
   turns a perfectly sideways wheel event into a vertical scroll; that is
   expected.
