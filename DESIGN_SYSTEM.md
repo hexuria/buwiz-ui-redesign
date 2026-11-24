@@ -1,7 +1,7 @@
 # eBIRForms desktop design system (shell redesign, 2026-10-14)
 
 Read this before you build or restyle any desktop screen in buwiz-forms,
-whether in gpui-shell (`app/`) or the painted UI (`crates/bir-desktop`). The interactive prototype at
+which today means the NSH app in `nsh/`. The interactive prototype at
 `docs/ui-redesign/shell-prototype.html` (published copy:
 https://claude.ai/artifact/UdGGALWrSBg2ipnYZS9VfW) shows the visual source of
 truth. Its **Components** tab renders every part listed here, in light and
@@ -115,10 +115,9 @@ only for shell commands and code.
 
 ## Wrapper components (build these first)
 
-In gpui-shell, put them in one shared module under `app/shell/`. In the
-painted UI, put them in `crates/bir-desktop/src/components/ui/` and export
-them from `components/mod.rs`. Every screen uses these. Calling raw `Button` sizing or
-`Icon::size` from a screen is a review finding.
+Put them in buwiz-forms `nsh/ui/` and export them from `ui/index.ts`. Every
+screen uses these. Sizing or coloring a base control from a screen is a review
+finding.
 
 | Wrapper | Builds on | Fixed values |
 | --- | --- | --- |
